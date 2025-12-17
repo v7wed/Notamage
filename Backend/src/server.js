@@ -1,10 +1,12 @@
 import express from "express";
-import notesRoutes from "./Routes/notesRoutes.js";
-import { connectDB } from "./Config/db.js";
 import dotenv from "dotenv";
-import theLimiter from "./Middleware/rateLimiter.js";
 import cors from "cors";
 import path from "path";
+
+import notesRoutes from "./Routes/notesRoutes.js";
+import authRoutes from "./Routes/authRoutes.js";
+import theLimiter from "./Middleware/rateLimiter.js";
+import { connectDB } from "./Config/db.js";
 
 dotenv.config();
 
@@ -25,11 +27,12 @@ app.use(express.json());
 app.use(theLimiter);
 
 app.use("/api/notes/", notesRoutes);
+app.use("/api/users", authRoutes);
 
 if (process.env.NODE_ENV === "production") {
   app.use(express.static(path.join(__dirname, "../Frontend/dist")));
-  app.get("*", (req, res) => {
-    res.sendFile(path.join(__dirname, "../Frontend/dist"));
+  app.get("*", (_, res) => {
+    res.sendFile(path.join(__dirname, "../Frontend/dist/index.html"));
   });
 }
 
