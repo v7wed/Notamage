@@ -51,7 +51,7 @@ export async function signIn(req, res) {
 }
 
 export function currUser(req, res) {
-  res.set("Cache-Control", "private, no-cache");
+  res.set("Cache-Control", "no-store");
   res.status(200).json(req.user);
 }
 
