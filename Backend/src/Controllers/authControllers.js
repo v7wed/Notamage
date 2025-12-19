@@ -1,5 +1,7 @@
-import User from "../Models/User.js";
 import jwt from "jsonwebtoken";
+
+import User from "../Models/User.js";
+import { reglimiter } from "../Config/upstash.js";
 
 export async function newUser(req, res) {
   try {
@@ -10,8 +12,16 @@ export async function newUser(req, res) {
     } else if (userExists) {
       return res.status(409).json({ message: "Email already exists" });
     } else {
+      const { success, reset } = await RegistrationLimit(req, res);
+      if (!success) {
+        return res.status(429).json({
+          message: "too many account creation attempts",
+          resetsAt: new Date(reset).toISOString(),
+        });
+      }
       const NewAccount = await User.create({ Name, Email, Password });
       const token = genToken(NewAccount._id);
+
       res.status(201).json({
         id: NewAccount._id,
         Name: NewAccount.Name,
@@ -20,7 +30,7 @@ export async function newUser(req, res) {
       });
     }
   } catch (error) {
-    console.error("Error in newUser controller"); //remove
+    console.error("Error in newUser controller");
     res.status(500).json({ message: "Internal Server Error" });
   }
 }
@@ -57,4 +67,26 @@ export function currUser(req, res) {
 
 export function genToken(id) {
   return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: "30d" });
+}
+
+async function RegistrationLimit(req, res) {
+  try {
+    const ip =
+      req.headers["x-forwarded-for"]?.split(",")[0] ||
+      req.headers["x-real-ip"] ||
+      req.socket.remoteAddress;
+    const identifier = `regIdentifier:${ip}`;
+    const { success, limit, remaining, reset } = await reglimiter.limit(
+      identifier
+    );
+    res.set({
+      "X-RateLimit-Limit": limit,
+      "X-RateLimit-Remaining": remaining,
+      "X-RateLimit-Reset": new Date(reset).toISOString(),
+    });
+
+    return { success, reset };
+  } catch (error) {
+    console.error(`Error in registrationLimit helper function ${error}`);
+  }
 }

@@ -1,4 +1,5 @@
 import express from "express";
+
 import { newUser, signIn, currUser } from "../Controllers/authControllers.js";
 import protect from "../Middleware/auth.js";
 

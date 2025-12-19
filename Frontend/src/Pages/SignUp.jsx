@@ -25,7 +25,7 @@ const SignUp = ({ setUser }) => {
         `local storage item looks like this \n ${localStorage.getItem("token")}`
       );
       setUser(response.data);
-      navigate("/");
+      navigate("/home");
     } catch (error) {
       console.error(`error in handleSubmit in signup page ${error}`);
     }

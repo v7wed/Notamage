@@ -12,11 +12,17 @@ export default async function protect(req, res, next) {
       req.user = await User.findById(decoded.id).select("-Password");
       return next();
     } catch (error) {
+      if (error.name === "TokenExpiredError") {
+        return res.status(401).json({
+          name: error.name,
+          message: "User token has expired",
+        });
+      }
       return res
         .status(401)
         .json({ message: "Error verifying the auth token" });
     }
   } else {
-    return res.status(401).json({ message: "No valid auth" });
+    return res.status(401).json({ message: "No valid auth provided" });
   }
 }

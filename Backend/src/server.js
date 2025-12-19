@@ -5,8 +5,7 @@ import path from "path";
 
 import notesRoutes from "./Routes/notesRoutes.js";
 import authRoutes from "./Routes/authRoutes.js";
-import theLimiter from "./Middleware/rateLimiter.js";
-import { connectDB } from "./Config/db.js";
+import connectDB from "./Config/db.js";
 
 dotenv.config();
 
@@ -24,7 +23,7 @@ if (process.env.NODE_ENV !== "production") {
 }
 
 app.use(express.json());
-app.use(theLimiter);
+//app.use(global_limit)
 
 app.use("/api/notes/", notesRoutes);
 app.use("/api/users", authRoutes);

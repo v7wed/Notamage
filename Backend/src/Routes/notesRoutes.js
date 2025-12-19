@@ -13,7 +13,7 @@ router.get("/", getAllNotes);
 
 router.get("/:id", getNote);
 
-router.post("/", createNote);
+router.post("/", createNote); //add ratelimiting
 
 router.put("/:id", updateNote);
 

@@ -9,6 +9,9 @@ import SignUp from "./Pages/SignUp.jsx";
 import SignIn from "./Pages/SignIn.jsx";
 import MyCategories from "./Pages/MyCategories.jsx";
 import Settings from "./Pages/Settings.jsx";
+import Landing from "./Pages/Landing.jsx";
+import About from "./Pages/About.jsx";
+import Notfound from "./Pages/Notfound.jsx";
 
 const App = () => {
   const [user, setUser] = useState(null);
@@ -22,9 +25,14 @@ const App = () => {
             headers: { Authorization: `Bearer ${token}` },
           });
           setUser(response.data);
+          //navigate("/home");
         } catch (error) {
-          console.error("Error fetching user data");
-          localStorage.removeItem("token");
+          if (error.response.data.name === "TokenExpiredError") {
+            localStorage.removeItem("token");
+            //navigate("/signin");
+          } else {
+            console.error(`Error when fetching user data: ${error}`);
+          }
         }
       }
     }
@@ -33,15 +41,26 @@ const App = () => {
 
   return (
     <div className="relative h-full w-full">
-      <div className="absolute inset-0 -z-10 h-full w-full items-center px-5 py-24 [background:radial-gradient(125%_125%_at_50%_10%,#000_60%,#00FF9D40_100%)]" />
       <Routes>
-        <Route path="/signin" element={<SignIn setUser={setUser} />} />
-        <Route path="/signup" element={<SignUp setUser={setUser} />} />
-        <Route path="/" element={<HomePage />} />
-        <Route path="/create" element={<CreatePage />} />
-        <Route path="/note/:id" element={<NoteDetail />} />
-        <Route path="/categories" element={<MyCategories />} />
-        <Route path="/settings" element={<Settings />} />
+        <Route path="/" element={<Landing />} />
+        <Route path="/about" element={<About />} />
+        <Route
+          path="/signin"
+          element={user ? <HomePage /> : <SignIn setUser={setUser} />}
+        />
+        <Route
+          path="/signup"
+          element={user ? <HomePage /> : <SignUp setUser={setUser} />}
+        />
+        <Route path="/home" element={user ? <HomePage /> : <Landing />} />
+        <Route path="/create" element={user ? <CreatePage /> : <Landing />} />
+        <Route path="/note/:id" element={user ? <NoteDetail /> : <Landing />} />
+        <Route
+          path="/categories"
+          element={user ? <MyCategories /> : <Landing />}
+        />
+        <Route path="/settings" element={user ? <Settings /> : <Landing />} />
+        <Route path="*" element={<Notfound />} />
       </Routes>
     </div>
   );
