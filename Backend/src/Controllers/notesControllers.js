@@ -1,10 +1,23 @@
 import Note from "../Models/Note.js";
-export async function getAllNotes(req, res) {
+
+export async function getAllNotes(_, res) {
   try {
     const notes = await Note.find().sort({ createdAt: -1 });
-    res.status(200).json(notes);
+    return res.status(200).json(notes);
   } catch (error) {
-    console.error("error in getNotes controller: ", error);
+    console.error("error in getAllNotes controller: ", error);
+    res.status(500).json({ message: "internal server error" });
+  }
+}
+
+export async function getUserNotes(req, res) {
+  try {
+    const userNotes = await Note.find({ userID: req.params.id }).sort({
+      createdAt: -1,
+    });
+    return res.status(200).json(userNotes);
+  } catch (error) {
+    console.error("error in getUserNotes controller: ", error);
     res.status(500).json({ message: "internal server error" });
   }
 }
@@ -25,10 +38,10 @@ export async function getNote(req, res) {
 
 export const createNote = async (req, res) => {
   try {
-    const { title, content } = req.body;
-    const newNote = new Note({ title, content });
+    const { title, content, userID, categoryID } = req.body;
+    const newNote = new Note({ title, content, userID, categoryID });
     await newNote.save();
-    res.status(201).json({ message: "Note creatd successfully here it is" });
+    return res.status(201).json({ message: "Note creatd successfully" });
   } catch (error) {
     console.error("error in createNote controller: ", error);
     res.status(500).json({ message: "internal server error" });
@@ -37,15 +50,15 @@ export const createNote = async (req, res) => {
 
 export async function updateNote(req, res) {
   try {
-    const { title, content } = req.body;
+    const { title, content, userID, categoryID } = req.body;
     const updatedNote = await Note.findByIdAndUpdate(
       req.params.id,
-      { title, content },
+      { title, content, userID, categoryID },
       { new: true }
     );
     if (!updatedNote)
       return res.status(404).json({ message: "Note not found" });
-    res.status(200).json(updatedNote);
+    return res.status(200).json(updatedNote);
   } catch (error) {
     console.error("error in updateNote controller: ", error);
     res.status(500).json({ message: "internal server error" });

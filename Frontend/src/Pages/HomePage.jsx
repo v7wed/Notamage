@@ -1,12 +1,11 @@
 import { useState, useEffect } from "react";
-
 import { toast } from "react-hot-toast";
 
+import api from "../lib/axios.js";
 import NavBar from "../Components/NavBar.jsx";
 import RateLimitedUI from "../Components/RateLimitedUI.jsx";
 import Loading from "../Components/Loading.jsx";
 import NoteCard from "../Components/NoteCard.jsx";
-import api from "../lib/axios.js";
 import NotesNotFound from "../Components/NotesNotFound.jsx";
 
 const HomePage = () => {
