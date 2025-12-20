@@ -5,6 +5,7 @@ import path from "path";
 
 import notesRoutes from "./Routes/notesRoutes.js";
 import authRoutes from "./Routes/authRoutes.js";
+import categRoutes from "./Routes/categRoutes.js";
 import connectDB from "./Config/db.js";
 
 dotenv.config();
@@ -25,8 +26,9 @@ if (process.env.NODE_ENV !== "production") {
 app.use(express.json());
 //app.use(global_limit)
 
-app.use("/api/notes/", notesRoutes);
 app.use("/api/users", authRoutes);
+app.use("/api/notes", notesRoutes);
+app.use("/api/categ", categRoutes);
 
 if (process.env.NODE_ENV === "production") {
   app.use(express.static(path.join(__dirname, "../Frontend/dist")));

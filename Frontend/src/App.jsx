@@ -25,11 +25,9 @@ const App = () => {
             headers: { Authorization: `Bearer ${token}` },
           });
           setUser(response.data);
-          //navigate("/home");
         } catch (error) {
           if (error.response.data.name === "TokenExpiredError") {
             localStorage.removeItem("token");
-            //navigate("/signin");
           } else {
             console.error(`Error when fetching user data: ${error}`);
           }
@@ -46,13 +44,20 @@ const App = () => {
         <Route path="/about" element={<About />} />
         <Route
           path="/signin"
-          element={user ? <HomePage /> : <SignIn setUser={setUser} />}
+          element={
+            user ? <HomePage user={user} /> : <SignIn setUser={setUser} />
+          }
         />
         <Route
           path="/signup"
-          element={user ? <HomePage /> : <SignUp setUser={setUser} />}
+          element={
+            user ? <HomePage user={user} /> : <SignUp setUser={setUser} />
+          }
         />
-        <Route path="/home" element={user ? <HomePage /> : <Landing />} />
+        <Route
+          path="/home"
+          element={user ? <HomePage user={user} /> : <Landing />}
+        />
         <Route path="/create" element={user ? <CreatePage /> : <Landing />} />
         <Route path="/note/:id" element={user ? <NoteDetail /> : <Landing />} />
         <Route
