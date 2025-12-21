@@ -4,9 +4,9 @@ import { User } from "lucide-react";
 const UserProfileDropdown = ({ onSignOut }) => {
   return (
     <div className="dropdown dropdown-end">
-      <div tabIndex={0} role="button" className="btn btn-ghost btn-sm btn-circle">
+      <button className="btn btn-ghost btn-sm btn-circle">
         <User className="size-5" />
-      </div>
+      </button>
       <ul tabIndex={0} className="dropdown-content menu bg-base-300 rounded-box z-[1] w-52 p-2 shadow-lg border border-base-content/10 mt-3">
         <li><Link to="/settings" className="font-medieval">Settings</Link></li>
         <li><Link to="/categories" className="font-medieval">My Categories</Link></li>

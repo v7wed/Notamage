@@ -12,7 +12,7 @@ const VARIANTS = {
 
 const Navbar = ({ mode = "landing", user, onSignOut }) => {
   return (
-    <header className="bg-base-300 border-b border-base-content/10">
+    <header className="bg-base-300/30 backdrop-blur-md border-b border-base-content/10 sticky top-0 z-50">
       <div className="mx-auto max-w-6xl p-4">
         <div className="flex items-center justify-between">
           <Logo />
