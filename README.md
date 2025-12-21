@@ -1,5 +1,3 @@
-<div align="center">
-
 # 🧙‍♂️ **Notamage**
 
 ### _Not a mage but... i can help you with your notes!_ ✨

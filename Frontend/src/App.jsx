@@ -29,7 +29,8 @@ const App = () => {
           if (error.response.data.name === "TokenExpiredError") {
             localStorage.removeItem("token");
           } else {
-            console.error(`Error when fetching user data: ${error}`);
+            console.error(`Error when fetching user data: ${error.response.data.message}`);
+            localStorage.removeItem("token");
           }
         }
       }
