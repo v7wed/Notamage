@@ -51,20 +51,20 @@ const App = () => {
         <Route
           path="/signin"
           element={
-            user ? <HomePage user={user} /> : <SignIn setUser={setUser} onSignOut={onSignOut}/>
+            user ? <HomePage user={user} onSignOut={onSignOut} /> : <SignIn setUser={setUser} onSignOut={onSignOut}/>
           }
         />
         <Route
           path="/signup"
           element={
-            user ? <HomePage user={user} /> : <SignUp setUser={setUser} onSignOut={onSignOut} />
+            user ? <HomePage user={user} onSignOut={onSignOut}/> : <SignUp setUser={setUser} onSignOut={onSignOut} />
           }
         />
         <Route
           path="/home"
-          element={user ? <HomePage user={user} /> : <Landing user={user} onSignOut={onSignOut} />}
+          element={user ? <HomePage user={user} onSignOut={onSignOut} /> : <Landing user={user} onSignOut={onSignOut} />}
         />
-        <Route path="/create" element={user ? <CreatePage /> : <Landing user={user} onSignOut={onSignOut} />} />
+        <Route path="/create" element={user ? <CreatePage user={user}/> : <Landing user={user} onSignOut={onSignOut} />} />
         <Route path="/note/:id" element={user ? <NoteDetail /> : <Landing user={user} onSignOut={onSignOut} />} />
         <Route
           path="/categories"

@@ -5,7 +5,7 @@ import { toast } from "react-hot-toast";
 
 import api from "../lib/axios";
 
-const CreatePage = () => {
+const CreatePage = ({user}) => {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [loading, setLoading] = useState(false);
@@ -20,10 +20,10 @@ const CreatePage = () => {
     }
     setLoading(true);
     try {
-      await api.post("/notes", { title, content });
+      await api.post("/notes", { title, content ,userID: user._id});
       console.log("success");
       toast.success("note created successfully");
-      navigate("/");
+      navigate("/home");
     } catch (error) {
       if (error.response.status === 429) {
         toast.error("Too many note requests", { duration: 4000, icon: "💀" });

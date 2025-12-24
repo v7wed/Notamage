@@ -12,7 +12,12 @@ export async function getAllNotes(_, res) {
 
 export async function getUserNotes(req, res) {
   try {
-    const userNotes = await Note.find({ userID: req.params.id }).sort({
+    const {search} = req.query
+    let query = {userID: req.params.id}
+    if (search?.trim()){
+       query = {userID: req.params.id , $or: [{title: {$regex: search , $options: 'i'}}, {content:{$regex: search , $options: 'i'}}]}
+    }
+    const userNotes = await Note.find(query).sort({
       createdAt: -1,
     });
     return res.status(200).json(userNotes);

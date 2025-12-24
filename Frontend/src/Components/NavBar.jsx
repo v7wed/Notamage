@@ -10,7 +10,11 @@ const VARIANTS = {
   primary: "btn btn-primary btn-sm font-medieval",
 };
 
-const Navbar = ({ mode = "landing", user=null, onSignOut }) => {
+const Navbar = ({ setSearch,mode = "landing", user=null, onSignOut }) => {
+  const handleChange = (e) => {
+    e.preventDefault();
+    setSearch(e.target.value);
+  }
   return (
     <header className="bg-base-300/30 backdrop-blur-md border-b border-base-content/10 sticky top-0 z-50">
       <div className="mx-auto max-w-6xl p-4">
@@ -44,7 +48,14 @@ const Navbar = ({ mode = "landing", user=null, onSignOut }) => {
 
             {mode === "home" && (
               <>
-                {/* TODO: Search bar, Create button, Filter button, Profile */}
+              <input  type="text" onChange={handleChange}/>
+                <Link to="/create" className={VARIANTS.primary}>
+                  <span>Create Note</span>
+                </Link>
+                <button className={VARIANTS.primary}>
+                  <span>Filter Notes</span>
+                </button>
+                <UserProfileDropdown onSignOut={onSignOut} />
               </>
             )}
 
