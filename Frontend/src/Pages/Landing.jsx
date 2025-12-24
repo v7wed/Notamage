@@ -3,7 +3,6 @@ import { Sparkles, ScrollText, Wand2 } from "lucide-react";
 
 import Footer from "../Components/Footer";
 import NavBar from "../Components/NavBar.jsx";
-import SpriteAnimation from "../Components/SpriteAnimation.jsx";
 
 const Landing = () => {
   return (
@@ -15,16 +14,19 @@ const Landing = () => {
           {/* Main Title */}
           <div className="space-y-4">
             <div className="flex items-center justify-center gap-3 mb-4">
-              <Wand2 className="size-12 text-primary" />
-              <h1 className="text-6xl md:text-7xl font-bold text-primary font-medieval">
+              <Wand2 className="size-8 md:size-12 text-primary" />
+              <h1 className="text-4xl md:text-7xl font-bold text-primary font-medieval">
                 Notes Mage
               </h1>
-              <Sparkles className="size-12 text-primary" />
+              <Sparkles className="size-8 md:size-12 text-primary" />
             </div>
-            
+
             {/* Mage Animation */}
             <div className="flex justify-center my-6">
-              <SpriteAnimation
+              <div 
+                className="sprite sprite-mage-landing drop-shadow-2xl"
+                role="img"
+                aria-label="Animated wizard reading a magical scroll"
               />
             </div>
 
@@ -55,7 +57,7 @@ const Landing = () => {
       <section className="py-20 px-4 bg-base-200">
         <div className="max-w-6xl mx-auto">
           <div className="grid md:grid-cols-2 gap-12 items-center">
-            <div className="order-2 md:order-1">
+            <div>
               <h2 className="text-4xl font-bold text-primary font-medieval mb-6">
                 Your Personal Wizard Companion
               </h2>
@@ -94,10 +96,10 @@ const Landing = () => {
                 </div>
               </div>
             </div>
-            <div className="order-1 md:order-2 flex justify-center">
-              <img 
-                src="/mage_chat_landing.png" 
-                alt="Wizard companion interface" 
+            <div className="flex justify-center">
+              <img
+                src="/mage_chat_landing.png"
+                alt="Wizard companion interface"
                 className="max-w-sm w-full drop-shadow-2xl"
                 style={{ imageRendering: "pixelated" }}
               />

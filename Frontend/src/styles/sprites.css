@@ -1,0 +1,24 @@
+/* =============================================
+   SPRITE ANIMATION SYSTEM
+   Central location for all sprite animations
+   ============================================= */
+
+/* ===== Base Sprite Styles ===== */
+.sprite {
+  image-rendering: pixelated;
+}
+
+/* ===== LANDING PAGE MAGE ===== */
+/* 10 frames, 1024x1024 each = 10240x1024 spritesheet */
+.sprite-mage-landing {
+  width: 250px;
+  height: 250px;
+  background-image: url('/mage_landing_sprite.png');
+  background-size: 2500px 250px;
+  animation: mage-landing-loop 5s steps(10) infinite;
+}
+
+@keyframes mage-landing-loop {
+  from { background-position: 0 0; }
+  to { background-position: -2500px 0; }
+}

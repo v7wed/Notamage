@@ -15,19 +15,20 @@ const Navbar = ({ mode = "landing", user, onSignOut }) => {
     <header className="bg-base-300/30 backdrop-blur-md border-b border-base-content/10 sticky top-0 z-50">
       <div className="mx-auto max-w-6xl p-4">
         <div className="flex items-center justify-between">
-          <Logo />
-          
-          <div className="flex items-center gap-4">
+          <Logo textSize="text-xl sm:text-3xl" iconSize="size-6 sm:size-8" />
+
+          <div className="flex items-center gap-2 sm:gap-4">
             {mode === "landing" && !user && (
               <>
-                <Link to="/about" className={VARIANTS.text}>
+                <Link to="/about" className={`${VARIANTS.text} hidden sm:block`}>
                   About
                 </Link>
                 <Link to="/signin" className={VARIANTS.ghost}>
                   <span>Sign In</span>
                 </Link>
                 <Link to="/signup" className={VARIANTS.primary}>
-                  <span>Join the Mage</span>
+                  <span className="hidden sm:inline">Join the Mage</span>
+                  <span className="inline sm:hidden">Join</span>
                 </Link>
               </>
             )}
