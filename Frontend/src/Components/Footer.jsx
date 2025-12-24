@@ -3,8 +3,8 @@ import { BookOpen, Sparkles, Code2 } from "lucide-react";
 
 import Logo from "./Logo";
 
-const Footer = () => {
-  return (
+const Footer = ({mode = "landing"}) => {
+  return ( 
     <footer className="bg-base-300 border-t border-base-content/10 mt-auto">
       <div className="mx-auto max-w-6xl px-4 py-6 md:py-8">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">

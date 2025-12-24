@@ -10,7 +10,7 @@ const VARIANTS = {
   primary: "btn btn-primary btn-sm font-medieval",
 };
 
-const Navbar = ({ mode = "landing", user, onSignOut }) => {
+const Navbar = ({ mode = "landing", user=null, onSignOut }) => {
   return (
     <header className="bg-base-300/30 backdrop-blur-md border-b border-base-content/10 sticky top-0 z-50">
       <div className="mx-auto max-w-6xl p-4">

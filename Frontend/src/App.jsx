@@ -16,6 +16,11 @@ import Notfound from "./Pages/Notfound.jsx";
 const App = () => {
   const [user, setUser] = useState(null);
 
+  const onSignOut = () => {
+    localStorage.removeItem("token");
+    setUser(null);
+  };
+
   useEffect(() => {
     async function fetchUser() {
       const token = localStorage.getItem("token");
@@ -41,32 +46,32 @@ const App = () => {
   return (
     <div className="relative h-full w-full">
       <Routes>
-        <Route path="/" element={<Landing />} />
+        <Route path="/" element={<Landing user={user} onSignOut={onSignOut} />} />
         <Route path="/about" element={<About />} />
         <Route
           path="/signin"
           element={
-            user ? <HomePage user={user} /> : <SignIn setUser={setUser} />
+            user ? <HomePage user={user} /> : <SignIn setUser={setUser} onSignOut={onSignOut}/>
           }
         />
         <Route
           path="/signup"
           element={
-            user ? <HomePage user={user} /> : <SignUp setUser={setUser} />
+            user ? <HomePage user={user} /> : <SignUp setUser={setUser} onSignOut={onSignOut} />
           }
         />
         <Route
           path="/home"
-          element={user ? <HomePage user={user} /> : <Landing />}
+          element={user ? <HomePage user={user} /> : <Landing user={user} onSignOut={onSignOut} />}
         />
-        <Route path="/create" element={user ? <CreatePage /> : <Landing />} />
-        <Route path="/note/:id" element={user ? <NoteDetail /> : <Landing />} />
+        <Route path="/create" element={user ? <CreatePage /> : <Landing user={user} onSignOut={onSignOut} />} />
+        <Route path="/note/:id" element={user ? <NoteDetail /> : <Landing user={user} onSignOut={onSignOut} />} />
         <Route
           path="/categories"
-          element={user ? <MyCategories /> : <Landing />}
+          element={user ? <MyCategories /> : <Landing user={user} onSignOut={onSignOut} />}
         />
-        <Route path="/settings" element={user ? <Settings /> : <Landing />} />
-        <Route path="*" element={<Notfound />} />
+        <Route path="/settings" element={user ? <Settings /> : <Landing user={user} onSignOut={onSignOut} />} />
+        <Route path="*" element={<Notfound user={user} />} />
       </Routes>
     </div>
   );

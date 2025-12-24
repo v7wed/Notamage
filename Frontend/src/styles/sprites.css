@@ -22,3 +22,18 @@
   from { background-position: 0 0; }
   to { background-position: -2500px 0; }
 }
+
+/* ===== IDLE MAGE (for auth pages) ===== */
+/* 24 frames horizontal spritesheet */
+.sprite-mage-idle {
+  width: 180px;
+  height: 180px;
+  background-image: url('/mage_idle_sprite.png');
+  background-size: 4320px 180px;
+  animation: mage-idle-loop 15s steps(24) infinite;
+}
+
+@keyframes mage-idle-loop {
+  from { background-position: 0 0; }
+  to { background-position: -4320px 0; }
+}

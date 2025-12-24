@@ -1,13 +1,14 @@
 import { Link } from "react-router";
 import { Sparkles, ScrollText, Wand2 } from "lucide-react";
 
-import Footer from "../Components/Footer";
+
 import NavBar from "../Components/NavBar.jsx";
 
-const Landing = () => {
+const Landing = ({user, onSignOut}) => {
+  console.log("Landing page user prop:", user);
   return (
     <div className="min-h-screen flex flex-col">
-      <NavBar />
+      <NavBar user={user} onSignOut={onSignOut} />
       {/* Hero Section */}
       <div className="flex-1 flex flex-col items-center justify-center px-4 py-16 mt-14">
         <div className="max-w-4xl mx-auto text-center space-y-8">
@@ -238,8 +239,6 @@ const Landing = () => {
         </div>
       </section>
 
-      {/* Footer */}
-      <Footer />
     </div>
   );
 };

@@ -17,8 +17,9 @@ const NoteDetail = () => {
         const response = await api.get(`/notes/${id}`);
         setNote(response.data);
       } catch (error) {
-        toast.error("error getting the note");
         console.error("error in fetching note", error);
+        navigate("/notfound", { replace: true });
+        return;
       } finally {
         setLoading(false);
       }
