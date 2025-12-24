@@ -3,6 +3,7 @@ import { Sparkles, ScrollText, Wand2 } from "lucide-react";
 
 
 import NavBar from "../Components/NavBar.jsx";
+import Footer from "../Components/Footer.jsx";
 
 const Landing = ({user, onSignOut}) => {
   console.log("Landing page user prop:", user);
@@ -238,7 +239,7 @@ const Landing = ({user, onSignOut}) => {
           </div>
         </div>
       </section>
-
+<Footer />
     </div>
   );
 };
