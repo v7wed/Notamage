@@ -21,8 +21,17 @@ const SignIn = ({ setUser }) => {
         Password: password,
       });
       localStorage.setItem("token", response.data.token);
-      setUser(response.data);
+      // Transform to match the structure from /users/me (uses _id, not id)
+      setUser({
+        _id: response.data.id,
+        Name: response.data.Name,
+        Email: response.data.Email,
+      });
+
+      // Small delay to ensure React state update propagates before navigation
+
       navigate("/home");
+
     } catch (err) {
       setError(err.response?.data?.message || "Failed to sign in. Please try again.");
       console.error(`error in handleSubmit in signin page ${err}`);
@@ -41,7 +50,7 @@ const SignIn = ({ setUser }) => {
             <div className="card-body items-center text-center pt-8 pb-10 px-8">
               {/* Mage Animation */}
               <div className="mb-2">
-                <div 
+                <div
                   className="sprite sprite-mage-idle drop-shadow-lg"
                   role="img"
                   aria-label="Animated wizard welcoming you"
@@ -103,8 +112,8 @@ const SignIn = ({ setUser }) => {
                 </div>
 
                 {/* Submit Button */}
-                <button 
-                  type="submit" 
+                <button
+                  type="submit"
                   className="btn btn-primary w-full mt-6"
                   disabled={loading}
                 >
@@ -127,8 +136,8 @@ const SignIn = ({ setUser }) => {
               {/* Sign Up Link */}
               <p className="font-body text-base-content/70">
                 Don't have an account?{" "}
-                <Link 
-                  to="/signup" 
+                <Link
+                  to="/signup"
                   className="link link-primary font-semibold font-medieval hover:link-hover"
                 >
                   Begin Your Journey
@@ -136,8 +145,8 @@ const SignIn = ({ setUser }) => {
               </p>
 
               {/* Back to Home */}
-              <Link 
-                to="/" 
+              <Link
+                to="/"
                 className="btn btn-ghost btn-sm mt-4 font-medieval text-base-content/60"
               >
                 ← Return to Landing

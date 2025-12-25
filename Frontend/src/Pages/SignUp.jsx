@@ -22,17 +22,22 @@ const SignUp = ({ setUser }) => {
   async function handleSubmit(e) {
     e.preventDefault();
     setError("");
-    
+
     if (formData.Password !== confirmPassword) {
       setError("Passwords do not match.");
       return;
     }
-    
+
     setLoading(true);
     try {
       const response = await api.post("/users/reg", formData);
       localStorage.setItem("token", response.data.token);
-      setUser(response.data);
+      // Transform to match the structure from /users/me (uses _id, not id)
+      setUser({
+        _id: response.data.id,
+        Name: response.data.Name,
+        Email: response.data.Email,
+      });
       navigate("/home");
     } catch (err) {
       setError(err.response?.data?.message || "Failed to create account. Please try again.");
@@ -52,7 +57,7 @@ const SignUp = ({ setUser }) => {
             <div className="card-body items-center text-center pt-8 pb-10 px-8">
               {/* Mage Animation */}
               <div className="mb-2">
-                <div 
+                <div
                   className="sprite sprite-mage-idle drop-shadow-lg"
                   role="img"
                   aria-label="Animated wizard welcoming new apprentice"
@@ -159,8 +164,8 @@ const SignUp = ({ setUser }) => {
                 </div>
 
                 {/* Submit Button */}
-                <button 
-                  type="submit" 
+                <button
+                  type="submit"
                   className="btn btn-primary w-full mt-4"
                   disabled={loading}
                 >
@@ -183,8 +188,8 @@ const SignUp = ({ setUser }) => {
               {/* Sign In Link */}
               <p className="font-body text-base-content/70">
                 Have an account?{" "}
-                <Link 
-                  to="/signin" 
+                <Link
+                  to="/signin"
                   className="link link-primary font-semibold font-medieval hover:link-hover"
                 >
                   Return to Guild
@@ -192,8 +197,8 @@ const SignUp = ({ setUser }) => {
               </p>
 
               {/* Back to Home */}
-              <Link 
-                to="/" 
+              <Link
+                to="/"
                 className="btn btn-ghost btn-sm mt-4 font-medieval text-base-content/60"
               >
                 ← Return to Landing

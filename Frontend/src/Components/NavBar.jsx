@@ -1,5 +1,5 @@
 import { Link } from "react-router";
-import { Search, Feather, Filter, Trash2, X, FolderPlus } from "lucide-react";
+import { Search, Feather, Filter, Trash2, X, FolderPlus, Clock } from "lucide-react";
 
 import Logo from "./Logo.jsx";
 import UserProfileDropdown from "./UserProfileDropdown.jsx";
@@ -17,7 +17,10 @@ const Navbar = ({
   user = null,
   onSignOut,
   onClearSelection,
-  onDeleteSelected
+  onDeleteSelected,
+  onOpenAddTo,
+  catMode,
+  setCatMode
 }) => {
   const handleChange = (e) => {
     setSearch(e.target.value);
@@ -89,10 +92,27 @@ const Navbar = ({
                   <Feather className="size-4" />
                   <span className="hidden sm:inline">Create</span>
                 </Link>
-                <button className="btn btn-ghost btn-sm gap-1 font-medieval border border-primary/30 hover:border-primary">
-                  <Filter className="size-4" />
-                  <span className="hidden sm:inline">Filter</span>
-                </button>
+
+                {/* Filter Dropdown */}
+                <div className="dropdown dropdown-end">
+                  <button tabIndex={0} className="btn btn-ghost btn-sm gap-1 font-medieval border border-primary/30 hover:border-primary">
+                    <Filter className="size-4" />
+                    <span className="hidden sm:inline">{catMode ? 'Category' : 'Filter'}</span>
+                  </button>
+                  <ul tabIndex={0} className="dropdown-content z-[2] menu p-2 shadow-2xl bg-base-200 border border-base-content/10 rounded-box w-40 font-medieval mt-2">
+                    <li>
+                      <button onClick={() => setCatMode(false)} className={!catMode ? 'bg-primary/20 text-primary' : ''}>
+                        <Clock className="size-4" /> Recent
+                      </button>
+                    </li>
+                    <li>
+                      <button onClick={() => setCatMode(true)} className={catMode ? 'bg-primary/20 text-primary' : ''}>
+                        <FolderPlus className="size-4" /> Category
+                      </button>
+                    </li>
+                  </ul>
+                </div>
+
                 <UserProfileDropdown onSignOut={onSignOut} />
               </>
             )}
@@ -101,7 +121,7 @@ const Navbar = ({
             {mode === "home_se" && (
               <>
                 {/* Add To Category Button */}
-                <button className="btn btn-primary btn-sm gap-1 font-medieval">
+                <button onClick={onOpenAddTo} className="btn btn-primary btn-sm gap-1 font-medieval">
                   <FolderPlus className="size-4" />
                   <span className="hidden sm:inline">Add to</span>
                 </button>
@@ -157,4 +177,3 @@ const Navbar = ({
 };
 
 export default Navbar;
-

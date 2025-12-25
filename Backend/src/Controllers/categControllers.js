@@ -56,34 +56,25 @@ export async function addtoCateg(req, res) {
         .json({ message: "notesID must be a non-empty array" });
     }
 
-    const category = await Category.findById(categoryID);
-    if (!category) {
-      return res.status(404).json({ message: "Category not found" });
+    // If categoryID is provided (not null), verify it exists
+    if (categoryID) {
+      const category = await Category.findById(categoryID);
+      if (!category) {
+        return res.status(404).json({ message: "Category not found" });
+      }
     }
 
-    const notesWithCateg = await Note.find({
-      _id: { $in: notesID },
-      categoryID: { $ne: null },
-    });
-
-    if (notesWithCateg.length > 0) {
-      return res.status(409).json({
-        message: "Some notes are already in another category",
-        conflictingNotes: notesWithCateg.map((n) => n._id),
-      });
-    }
-
+    // Update all notes - replace their categoryID (or set to null to uncategorize)
     const result = await Note.updateMany(
-      {
-        _id: { $in: notesID },
-        categoryID: null,
-      },
-      { $set: { categoryID } }
+      { _id: { $in: notesID } },
+      { $set: { categoryID: categoryID || null } }
     );
 
     return res.status(200).json({
-      message: "Notes added to category successfully",
-      addedCount: result.modifiedCount,
+      message: categoryID
+        ? "Notes added to category successfully"
+        : "Notes uncategorized successfully",
+      modifiedCount: result.modifiedCount,
     });
   } catch (error) {
     console.error("error in addtoCateg controller: ", error);
