@@ -6,7 +6,6 @@ import NavBar from "../Components/NavBar.jsx";
 import Footer from "../Components/Footer.jsx";
 
 const Landing = ({user, onSignOut}) => {
-  console.log("Landing page user prop:", user);
   return (
     <div className="min-h-screen flex flex-col">
       <NavBar user={user} onSignOut={onSignOut} />
