@@ -2,6 +2,7 @@ import express from "express";
 
 import {
   getAllCateg,
+  getCateg,
   deleteCateg,
   addtoCateg,
   clearCateg,
@@ -10,7 +11,8 @@ import {
 
 const router = express.Router();
 
-router.get("/:userid", getAllCateg);
+router.get("/:id", getCateg);
+router.get("/for/:userid", getAllCateg);
 router.post("/", createCateg);
 router.put("/add", addtoCateg);
 router.put("/:id", clearCateg);

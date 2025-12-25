@@ -1,6 +1,25 @@
 import Note from "../Models/Note.js";
 import Category from "../Models/Category.js";
 
+
+
+export async function getCateg(req, res) {
+  try {
+    const id = req.params.id;
+    if (id) {
+      const categ = await Category.findById(id);
+      return res
+        .status(200)
+        .json(categ);
+    } else {
+      return res.status(200).json(null)
+    }
+  } catch (error) {
+    console.error("error in createCateg controller: ", error);
+    res.status(500).json({ message: "internal server error" });
+  }
+}
+
 export async function createCateg(req, res) {
   try {
     const { name, userID } = req.body;

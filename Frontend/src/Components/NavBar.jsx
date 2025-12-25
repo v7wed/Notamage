@@ -1,9 +1,8 @@
 import { Link } from "react-router";
-import { Search, Feather, Filter } from "lucide-react";
+import { Search, Feather, Filter, Trash2, X, FolderPlus } from "lucide-react";
 
 import Logo from "./Logo.jsx";
 import UserProfileDropdown from "./UserProfileDropdown.jsx";
-
 
 const VARIANTS = {
   text: "text-sm font-medieval text-base-content/70 hover:text-primary transition-colors",
@@ -11,16 +10,28 @@ const VARIANTS = {
   primary: "btn btn-primary btn-sm font-medieval",
 };
 
-const Navbar = ({ setSearch,mode = "landing", user=null, onSignOut }) => {
+const Navbar = ({
+  selectedNotes = [],
+  setSearch,
+  mode = "landing",
+  user = null,
+  onSignOut,
+  onClearSelection,
+  onDeleteSelected
+}) => {
   const handleChange = (e) => {
     setSearch(e.target.value);
-  }
+  };
+
+  const selectionCount = selectedNotes.length;
+
   return (
     <header className="bg-base-300/30 backdrop-blur-md border-b border-base-content/10 sticky top-0 z-50">
       <div className="mx-auto max-w-7xl px-4 py-3">
         <div className="flex items-center justify-between gap-4">
           <Logo textSize="text-xl sm:text-3xl" iconSize="size-6 sm:size-8" />
 
+          {/* Search Bar - hidden in selection mode */}
           {mode === "home" && (
             <div className="flex-1 max-w-2xl mx-4 hidden md:block">
               <div className="relative group">
@@ -35,7 +46,17 @@ const Navbar = ({ setSearch,mode = "landing", user=null, onSignOut }) => {
             </div>
           )}
 
+          {/* Selection Mode Indicator - shows count when selecting */}
+          {mode === "home_se" && (
+            <div className="flex-1 flex items-center justify-center">
+              <span className="font-medieval text-primary text-lg">
+                {selectionCount} {selectionCount === 1 ? 'scroll' : 'scrolls'} selected
+              </span>
+            </div>
+          )}
+
           <div className="flex items-center gap-2 sm:gap-3">
+            {/* Landing page - not logged in */}
             {mode === "landing" && !user && (
               <>
                 <Link to="/about" className={`${VARIANTS.text} hidden sm:block`}>
@@ -51,6 +72,7 @@ const Navbar = ({ setSearch,mode = "landing", user=null, onSignOut }) => {
               </>
             )}
 
+            {/* Landing page - logged in */}
             {mode === "landing" && user && (
               <>
                 <Link to="/home" className={VARIANTS.primary}>
@@ -60,6 +82,7 @@ const Navbar = ({ setSearch,mode = "landing", user=null, onSignOut }) => {
               </>
             )}
 
+            {/* Home mode - normal browsing */}
             {mode === "home" && (
               <>
                 <Link to="/create" className="btn btn-primary btn-sm gap-1 font-medieval">
@@ -74,16 +97,38 @@ const Navbar = ({ setSearch,mode = "landing", user=null, onSignOut }) => {
               </>
             )}
 
-
+            {/* Selection mode - home_se */}
             {mode === "home_se" && (
               <>
-                {/* TODO: Disabled search bar, Add to button, Delete button */}
+                {/* Add To Category Button */}
+                <button className="btn btn-primary btn-sm gap-1 font-medieval">
+                  <FolderPlus className="size-4" />
+                  <span className="hidden sm:inline">Add to</span>
+                </button>
+
+                {/* Delete Selected Button */}
+                <button
+                  onClick={onDeleteSelected}
+                  className="btn btn-error btn-sm gap-1 font-medieval"
+                >
+                  <Trash2 className="size-4" />
+                  <span className="hidden sm:inline">Delete</span>
+                </button>
+
+                {/* Cancel Selection Button */}
+                <button
+                  onClick={onClearSelection}
+                  className="btn btn-ghost btn-sm gap-1 font-medieval border border-base-content/30 hover:border-error hover:text-error"
+                >
+                  <X className="size-4" />
+                  <span className="hidden sm:inline">Cancel</span>
+                </button>
               </>
             )}
           </div>
         </div>
 
-        {/* Mobile Search Bar */}
+        {/* Mobile Search Bar - hidden in selection mode */}
         {mode === "home" && (
           <div className="mt-3 md:hidden">
             <div className="relative group">
@@ -97,9 +142,19 @@ const Navbar = ({ setSearch,mode = "landing", user=null, onSignOut }) => {
             </div>
           </div>
         )}
+
+        {/* Mobile Selection Info */}
+        {mode === "home_se" && (
+          <div className="mt-3 md:hidden text-center">
+            <span className="font-medieval text-primary">
+              {selectionCount} selected
+            </span>
+          </div>
+        )}
       </div>
     </header>
   );
 };
 
 export default Navbar;
+
