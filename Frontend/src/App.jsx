@@ -3,7 +3,6 @@ import { useState, useEffect } from "react";
 import api from "./lib/axios.js";
 
 import HomePage from "./Pages/HomePage.jsx";
-import CreatePage from "./Pages/CreatePage.jsx";
 import NoteDetail from "./Pages/NoteDetail.jsx";
 import SignUp from "./Pages/SignUp.jsx";
 import SignIn from "./Pages/SignIn.jsx";
@@ -51,26 +50,25 @@ const App = () => {
         <Route
           path="/signin"
           element={
-            user ? <HomePage user={user} onSignOut={onSignOut} /> : <SignIn setUser={setUser} onSignOut={onSignOut}/>
+            user ? <HomePage user={user} onSignOut={onSignOut} /> : <SignIn setUser={setUser} onSignOut={onSignOut} />
           }
         />
         <Route
           path="/signup"
           element={
-            user ? <HomePage user={user} onSignOut={onSignOut}/> : <SignUp setUser={setUser} onSignOut={onSignOut} />
+            user ? <HomePage user={user} onSignOut={onSignOut} /> : <SignUp setUser={setUser} onSignOut={onSignOut} />
           }
         />
         <Route
           path="/home"
           element={user ? <HomePage user={user} onSignOut={onSignOut} /> : <Landing user={user} onSignOut={onSignOut} />}
         />
-        <Route path="/create" element={user ? <CreatePage user={user}/> : <Landing user={user} onSignOut={onSignOut} />} />
-        <Route path="/note/:id" element={user ? <NoteDetail /> : <Landing user={user} onSignOut={onSignOut} />} />
+        <Route path="/note/:id" element={user ? <NoteDetail user={user} /> : <Landing user={user} onSignOut={onSignOut} />} />
         <Route
           path="/categories"
-          element={user ? <MyCategories /> : <Landing user={user} onSignOut={onSignOut} />}
+          element={user ? <MyCategories user={user} /> : <Landing user={user} onSignOut={onSignOut} />}
         />
-        <Route path="/settings" element={user ? <Settings /> : <Landing user={user} onSignOut={onSignOut} />} />
+        <Route path="/settings" element={user ? <Settings user={user} /> : <Landing user={user} onSignOut={onSignOut} />} />
         <Route path="*" element={<Notfound user={user} />} />
       </Routes>
     </div>

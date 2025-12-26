@@ -8,6 +8,7 @@ import Loading from "../Components/Loading.jsx";
 import NoteCard from "../Components/NoteCard.jsx";
 import NotesNotFound from "../Components/NotesNotFound.jsx";
 import AddToModal from "../Components/AddTo.jsx";
+import "../styles/HomePage.css";
 
 const HomePage = ({ user, onSignOut }) => {
   const [notes, setNotes] = useState([]);

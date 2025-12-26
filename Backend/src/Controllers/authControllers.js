@@ -65,6 +65,59 @@ export function currUser(req, res) {
   res.status(200).json(req.user);
 }
 
+export async function updateEmail(req, res) {
+  try {
+    const { Email } = req.body;
+    const user = await User.findById(req.user._id);
+
+    if (!Email || !Email.trim()) {
+      return res.status(400).json({ message: "Email is required" });
+    }
+
+    const emailExists = await User.findOne({ Email });
+    if (emailExists && emailExists._id.toString() !== user._id.toString()) {
+      return res.status(409).json({ message: "Email already in use" });
+    }
+
+    user.Email = Email;
+    await user.save();
+
+    res.status(200).json({
+      id: user._id,
+      Name: user.Name,
+      Email: user.Email,
+    });
+  } catch (error) {
+    console.error("Error in updateEmail controller", error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+}
+
+export async function updatePassword(req, res) {
+  try {
+    const { oldPassword, newPassword } = req.body;
+    const user = await User.findById(req.user._id);
+
+    if (!oldPassword || !newPassword) {
+      return res.status(400).json({ message: "Both old and new passwords are required" });
+    }
+
+    // Verify old password
+    const isMatch = await user.matchPass(oldPassword);
+    if (!isMatch) {
+      return res.status(401).json({ message: "Incorrect old password" });
+    }
+
+    user.Password = newPassword;
+    await user.save();
+
+    res.status(200).json({ message: "Password updated successfully" });
+  } catch (error) {
+    console.error("Error in updatePassword controller", error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+}
+
 export function genToken(id) {
   return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: "30d" });
 }
@@ -90,3 +143,4 @@ async function RegistrationLimit(req, res) {
     console.error(`Error in registrationLimit helper function ${error}`);
   }
 }
+

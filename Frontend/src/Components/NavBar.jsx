@@ -1,6 +1,9 @@
-import { Link } from "react-router";
-import { Search, Feather, Filter, Trash2, X, FolderPlus, Clock } from "lucide-react";
+import { Link, useNavigate } from "react-router";
+import { useState } from "react";
+import { Search, Feather, Filter, Trash2, X, FolderPlus, Clock, LoaderIcon } from "lucide-react";
+import { toast } from "react-hot-toast";
 
+import api from "../lib/axios";
 import Logo from "./Logo.jsx";
 import UserProfileDropdown from "./UserProfileDropdown.jsx";
 
@@ -22,8 +25,38 @@ const Navbar = ({
   catMode,
   setCatMode
 }) => {
+  const [creatingNote, setCreatingNote] = useState(false);
+  const navigate = useNavigate();
+
   const handleChange = (e) => {
     setSearch(e.target.value);
+  };
+
+  const handleCreateNote = async () => {
+    if (!user?._id) {
+      toast.error("Please sign in to create notes");
+      return;
+    }
+
+    setCreatingNote(true);
+    try {
+      const response = await api.post("/notes", {
+        title: "",
+        content: "",
+        userID: user._id
+      });
+      const newNote = response.data;
+      navigate(`/note/${newNote._id}`);
+    } catch (error) {
+      console.error("Error creating note:", error);
+      if (error.response?.status === 429) {
+        toast.error("Too many requests, please wait", { icon: "💀" });
+      } else {
+        toast.error("Failed to create new scroll");
+      }
+    } finally {
+      setCreatingNote(false);
+    }
   };
 
   const selectionCount = selectedNotes.length;
@@ -88,10 +121,18 @@ const Navbar = ({
             {/* Home mode - normal browsing */}
             {mode === "home" && (
               <>
-                <Link to="/create" className="btn btn-primary btn-sm gap-1 font-medieval">
-                  <Feather className="size-4" />
-                  <span className="hidden sm:inline">Create</span>
-                </Link>
+                <button
+                  onClick={handleCreateNote}
+                  disabled={creatingNote}
+                  className="btn btn-primary btn-sm gap-1 font-medieval"
+                >
+                  {creatingNote ? (
+                    <LoaderIcon className="size-4 animate-spin" />
+                  ) : (
+                    <Feather className="size-4" />
+                  )}
+                  <span className="hidden sm:inline">{creatingNote ? 'Creating...' : 'Create'}</span>
+                </button>
 
                 {/* Filter Dropdown */}
                 <div className="dropdown dropdown-end">

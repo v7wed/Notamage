@@ -82,19 +82,35 @@ export async function addtoCateg(req, res) {
   }
 }
 
+export async function updateCateg(req, res) {
+  try {
+    const { name } = req.body;
+    const result = await Category.findByIdAndUpdate(
+      req.params.id,
+      { name },
+      { new: true }
+    );
+    if (!result) return res.status(404).json({ message: "Category not found" });
+    return res.status(200).json(result);
+  } catch (error) {
+    console.error("error in updateCateg controller: ", error);
+    res.status(500).json({ message: "internal server error" });
+  }
+}
+
 export async function deleteCateg(req, res) {
   try {
     const categoryID = req.params.id;
+    // Check if there are still notes associated (safety check)
     const hasNotes = await Note.findOne({ categoryID });
     if (!hasNotes) {
-      const result = await Category.findByIdAndDelete({ categoryID });
-      return res
-        .status(201)
-        .json({ message: `category created successfully ${result}` });
+      const result = await Category.findByIdAndDelete(categoryID);
+      if (!result) return res.status(404).json({ message: "Category not found" });
+      return res.status(200).json({ message: "Category deleted successfully" });
     } else {
       return res
         .status(409)
-        .json({ message: "cannot delete a category with notes" });
+        .json({ message: "Cannot delete a category with notes. Clear notes first." });
     }
   } catch (error) {
     console.error("error in deleteCateg controller: ", error);

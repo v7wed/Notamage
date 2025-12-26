@@ -12,10 +12,10 @@ export async function getAllNotes(_, res) {
 
 export async function getUserNotes(req, res) {
   try {
-    const {search} = req.query
-    let query = {userID: req.params.id}
-    if (search?.trim()){
-       query = {userID: req.params.id , $or: [{title: {$regex: search , $options: 'i'}}, {content:{$regex: search , $options: 'i'}}]}
+    const { search } = req.query
+    let query = { userID: req.params.id }
+    if (search?.trim()) {
+      query = { userID: req.params.id, $or: [{ title: { $regex: search, $options: 'i' } }, { content: { $regex: search, $options: 'i' } }] }
     }
     const userNotes = await Note.find(query).sort({
       createdAt: -1,
@@ -46,7 +46,7 @@ export const createNote = async (req, res) => {
     const { title, content, userID, categoryID } = req.body;
     const newNote = new Note({ title, content, userID, categoryID });
     await newNote.save();
-    return res.status(201).json({ message: "Note creatd successfully" });
+    return res.status(201).json(newNote);
   } catch (error) {
     console.error("error in createNote controller: ", error);
     res.status(500).json({ message: "internal server error" });
