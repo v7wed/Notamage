@@ -1,50 +1,85 @@
-import { PenSquareIcon, Trash2Icon } from "lucide-react";
 import { Link } from "react-router";
+import { Check } from "lucide-react";
+
+
 import { formatDate } from "../lib/utils";
-import api from "../lib/axios";
-import toast from "react-hot-toast";
 
-const NoteCard = ({ data, setNotes }) => {
-  const handleDelete = async (e, id) => {
-    e.preventDefault(); // get rid of the navigation behaviour
 
-    if (!window.confirm("Are you sure you want to delete this note?")) return;
+const NoteCard = ({ data, isSelected, onToggleSelect, isSelectionMode, categoryName }) => {
 
-    try {
-      await api.delete(`/notes/${id}`);
-      toast.success("Note deleted successfully");
-      setNotes((prev) => prev.filter((note) => note._id !== id)); // get rid of the deleted one
-    } catch (error) {
-      console.log("Error in handleDelete", error);
-      toast.error("Failed to delete note");
+  // Handle checkbox click - prevent navigation and toggle selection
+  const handleCheckboxClick = (e) => {
+    e.preventDefault(); // Prevent Link navigation
+    onToggleSelect(data._id);
+  };
+
+  // Handle card click - in selection mode, toggle selection instead of navigating
+  const handleCardClick = (e) => {
+    if (isSelectionMode) {
+      e.preventDefault();
+      onToggleSelect(data._id);
     }
+    // Otherwise, let the Link navigate normally
   };
 
   return (
-    <Link
-      to={`/note/${data._id}`}
-      className="card bg-base-100 hover:shadow-lg transition-all duration-200 
-      border-t-4 border-solid border-[#00FF9D]"
-    >
-      <div className="card-body">
-        <h3 className="card-title text-base-content">{data.title}</h3>
-        <p className="text-base-content/70 line-clamp-3">{data.content}</p>
-        <div className="card-actions justify-between items-center mt-4">
-          <span className="text-sm text-base-content/60">
-            {formatDate(new Date(data.createdAt))}
-          </span>
-          <div className="flex items-center gap-1">
-            <PenSquareIcon className="size-4" />
-            <button
-              className="btn btn-ghost btn-xs text-error"
-              onClick={(e) => handleDelete(e, data._id)}
-            >
-              <Trash2Icon className="size-4" />
-            </button>
+    <div className="parchment-wrapper block group relative">
+      {/* Selection Checkbox - shows on hover OR when in selection mode */}
+      <div
+        className={`
+          absolute top-3 right-3 z-10 px-6 py-4
+          transition-all duration-200
+          ${isSelectionMode || isSelected
+            ? 'opacity-100 scale-100'
+            : 'opacity-0 scale-75 group-hover:opacity-100 group-hover:scale-100'
+          }
+        `}
+      >
+        <button
+          onClick={handleCheckboxClick}
+          className={`
+            w-6 h-6 rounded border-2 flex items-center justify-center
+            transition-all duration-200 cursor-pointer
+            ${isSelected
+              ? 'bg-primary border-primary text-primary-content'
+              : 'bg-base-100/90 border-base-content/40 hover:border-primary'
+            }
+          `}
+          aria-label={isSelected ? "Deselect note" : "Select note"}
+        >
+          {isSelected && <Check className="size-4" strokeWidth={3} />}
+        </button>
+      </div>
+
+      {/* Card Content - wrapped in Link for navigation */}
+      <Link
+        to={`/note/${data._id}`}
+        onClick={handleCardClick}
+        className={`
+          block parchment-card
+          transition-all duration-200
+          ${isSelected ? 'ring-2 ring-primary ring-offset-2 ring-offset-base-100' : ''}
+        `}
+      >
+        <div className="parchment-content">
+          <h3 className="parchment-title text-lg">{data.title}</h3>
+          <p className="parchment-text line-clamp-3">{data.content}</p>
+
+          <div className="flex justify-between items-center mt-4">
+            <span className="parchment-date">
+              {formatDate(new Date(data.createdAt))}
+            </span>
+            {categoryName && (
+              <span className="text-[10px] font-medieval uppercase tracking-wider px-2 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20">
+                {categoryName}
+              </span>
+            )}
           </div>
         </div>
-      </div>
-    </Link>
+      </Link>
+    </div>
   );
 };
+
 export default NoteCard;
+

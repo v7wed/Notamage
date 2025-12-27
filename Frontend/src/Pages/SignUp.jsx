@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { useNavigate } from "react-router";
+import { Link, useNavigate } from "react-router";
+import { UserPlus, Mail, Lock, User, KeyRound } from "lucide-react";
 
 import api from "../lib/axios.js";
 
@@ -9,82 +10,197 @@ const SignUp = ({ setUser }) => {
     Email: "",
     Password: "",
   });
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const navigate = useNavigate();
 
   function handleChange(e) {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   }
-  const navigate = useNavigate();
 
   async function handleSubmit(e) {
     e.preventDefault();
+    setError("");
+
+    if (formData.Password !== confirmPassword) {
+      setError("Passwords do not match.");
+      return;
+    }
+
+    setLoading(true);
     try {
       const response = await api.post("/users/reg", formData);
       localStorage.setItem("token", response.data.token);
-      console.log(response.data);
-      console.log(
-        `local storage item looks like this \n ${localStorage.getItem("token")}`
-      );
       setUser(response.data);
       navigate("/home");
-    } catch (error) {
-      console.error(`error in handleSubmit in signup page ${error}`);
+    } catch (err) {
+      setError(err.response?.data?.message || "Failed to create account. Please try again.");
+      console.error(`error in handleSubmit in signup page ${err}`);
+    } finally {
+      setLoading(false);
     }
   }
+
   return (
-    <div className="min-h-screen flex items-center justify-center">
-      <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md border border-gray-200">
-        <h2 className="text-2xl font-bold mb-6 text-center text-gray-800">
-          Sign In Page
-        </h2>
-        <form onSubmit={handleSubmit}>
-          <div className="mb-4">
-            <label className="block text-gray-600 text-sm font-medium mb-1">
-              Name
-            </label>
-            <input
-              className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-200 outline-none focus:border-blue-400"
-              type="text"
-              value={formData.Name}
-              name="Name"
-              onChange={handleChange}
-              placeholder="Enter your name"
-              autoComplete="off"
-              required
-            />
+    <div className="min-h-screen bg-base-200 flex flex-col relative">
+      {/* Back to Home */}
+      <Link
+        to="/"
+        className="btn btn-ghost btn-sm font-medieval text-base-content/60 absolute top-4 left-4 z-10"
+      >
+        ← Back
+      </Link>
+      {/* Main content */}
+      <div className="flex-1 flex items-center justify-center px-4 py-8">
+        <div className="w-full max-w-md">
+          {/* Card */}
+          <div className="card bg-base-100 shadow-2xl border border-base-content/10">
+            <div className="card-body items-center text-center pt-8 pb-10 px-8">
+              {/* Mage Animation */}
+              <div className="mb-2">
+                <div
+                  className="sprite sprite-mage-idle drop-shadow-lg"
+                  role="img"
+                  aria-label="Animated wizard welcoming new apprentice"
+                />
+              </div>
+
+              {/* Title */}
+              <h1 className="text-3xl font-bold text-primary font-medieval mb-1">
+                Welcome, Stranger
+              </h1>
+              <p className="text-base-content/60 font-body mb-6">
+                Everyone has something to write, don't they?
+              </p>
+
+              {/* Error Alert */}
+              {error && (
+                <div className="alert alert-error w-full mb-4">
+                  <span className="font-body text-sm">{error}</span>
+                </div>
+              )}
+
+              {/* Form */}
+              <form onSubmit={handleSubmit} className="w-full space-y-4">
+                {/* Name Field */}
+                <div className="form-control w-full">
+                  <label className="label">
+                    <span className="label-text font-medieval">Wizard Name</span>
+                  </label>
+                  <label className="input input-bordered flex items-center gap-3 focus-within:outline-none focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/30">
+                    <User className="size-4 text-base-content/50" />
+                    <input
+                      type="text"
+                      name="Name"
+                      placeholder="Your name"
+                      className="grow font-body"
+                      value={formData.Name}
+                      onChange={handleChange}
+                      autoComplete="name"
+                      required
+                    />
+                  </label>
+                </div>
+
+                {/* Email Field */}
+                <div className="form-control w-full">
+                  <label className="label">
+                    <span className="label-text font-medieval">Email Address</span>
+                  </label>
+                  <label className="input input-bordered flex items-center gap-3 focus-within:outline-none focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/30">
+                    <Mail className="size-4 text-base-content/50" />
+                    <input
+                      type="email"
+                      name="Email"
+                      placeholder="thewizard@realmage.com"
+                      className="grow font-body"
+                      value={formData.Email}
+                      onChange={handleChange}
+                      autoComplete="email"
+                      required
+                    />
+                  </label>
+                </div>
+
+                {/* Password Field */}
+                <div className="form-control w-full">
+                  <label className="label">
+                    <span className="label-text font-medieval">Secret Spell</span>
+                  </label>
+                  <label className="input input-bordered flex items-center gap-3 focus-within:outline-none focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/30">
+                    <Lock className="size-4 text-base-content/50" />
+                    <input
+                      type="password"
+                      name="Password"
+                      placeholder="Create your password"
+                      className="grow font-body"
+                      value={formData.Password}
+                      onChange={handleChange}
+                      required
+                    />
+                  </label>
+                  <label className="label">
+                    <span className="label-text-alt text-base-content/50 font-body">
+                      At least 6 characters recommended
+                    </span>
+                  </label>
+                </div>
+
+                {/* Confirm Password Field */}
+                <div className="form-control w-full">
+                  <label className="label">
+                    <span className="label-text font-medieval">Confirm Spell</span>
+                  </label>
+                  <label className="input input-bordered flex items-center gap-3 focus-within:outline-none focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/30">
+                    <KeyRound className="size-4 text-base-content/50" />
+                    <input
+                      type="password"
+                      placeholder="Repeat your password"
+                      className="grow font-body"
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      required
+                    />
+                  </label>
+                </div>
+
+                {/* Submit Button */}
+                <button
+                  type="submit"
+                  className="btn btn-primary w-full mt-4"
+                  disabled={loading}
+                >
+                  {loading ? (
+                    <span className="loading loading-spinner loading-sm"></span>
+                  ) : (
+                    <>
+                      <UserPlus className="size-5" />
+                      <span className="font-medieval">Begin Your Journey</span>
+                    </>
+                  )}
+                </button>
+              </form>
+
+              {/* Divider */}
+              <div className="divider text-base-content/40 text-sm font-body my-6">
+                Already a member?
+              </div>
+
+              {/* Sign In Link */}
+              <p className="font-body text-base-content/70">
+                Have an account?{" "}
+                <Link
+                  to="/signin"
+                  className="link link-primary font-semibold font-medieval hover:link-hover"
+                >
+                  Sign In
+                </Link>
+              </p>
+
+            </div>
           </div>
-          <div className="mb-4">
-            <label className="block text-gray-600 text-sm font-medium mb-1">
-              Email
-            </label>
-            <input
-              className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-200 outline-none focus:border-blue-400"
-              type="email"
-              value={formData.Email}
-              name="Email"
-              onChange={handleChange}
-              placeholder="Enter your email"
-              autoComplete="off"
-              required
-            />
-          </div>
-          <div className="mb-6">
-            <label className="block text-gray-600 text-sm font-medium mb-1">
-              Password
-            </label>
-            <input
-              className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-200 outline-none focus:border-blue-400"
-              type="password"
-              value={formData.Password}
-              name="Password"
-              onChange={handleChange}
-              placeholder="Enter your password"
-              required
-            />
-          </div>
-          <button className="w-full bg-blue-500 text-white p-3 rounded-md hover:bg-blue-600 font-medium cursor-pointer">
-            Sign up
-          </button>
-        </form>
+        </div>
       </div>
     </div>
   );

@@ -3,7 +3,6 @@ import { useState, useEffect } from "react";
 import api from "./lib/axios.js";
 
 import HomePage from "./Pages/HomePage.jsx";
-import CreatePage from "./Pages/CreatePage.jsx";
 import NoteDetail from "./Pages/NoteDetail.jsx";
 import SignUp from "./Pages/SignUp.jsx";
 import SignIn from "./Pages/SignIn.jsx";
@@ -15,6 +14,11 @@ import Notfound from "./Pages/Notfound.jsx";
 
 const App = () => {
   const [user, setUser] = useState(null);
+
+  const onSignOut = () => {
+    localStorage.removeItem("token");
+    setUser(null);
+  };
 
   useEffect(() => {
     async function fetchUser() {
@@ -29,7 +33,8 @@ const App = () => {
           if (error.response.data.name === "TokenExpiredError") {
             localStorage.removeItem("token");
           } else {
-            console.error(`Error when fetching user data: ${error}`);
+            console.error(`Error when fetching user data: ${error.response.data.message}`);
+            localStorage.removeItem("token");
           }
         }
       }
@@ -40,32 +45,31 @@ const App = () => {
   return (
     <div className="relative h-full w-full">
       <Routes>
-        <Route path="/" element={<Landing />} />
+        <Route path="/" element={<Landing user={user} onSignOut={onSignOut} />} />
         <Route path="/about" element={<About />} />
         <Route
           path="/signin"
           element={
-            user ? <HomePage user={user} /> : <SignIn setUser={setUser} />
+            user ? <HomePage user={user} onSignOut={onSignOut} /> : <SignIn setUser={setUser} onSignOut={onSignOut} />
           }
         />
         <Route
           path="/signup"
           element={
-            user ? <HomePage user={user} /> : <SignUp setUser={setUser} />
+            user ? <HomePage user={user} onSignOut={onSignOut} /> : <SignUp setUser={setUser} onSignOut={onSignOut} />
           }
         />
         <Route
           path="/home"
-          element={user ? <HomePage user={user} /> : <Landing />}
+          element={user ? <HomePage user={user} onSignOut={onSignOut} /> : <Landing user={user} onSignOut={onSignOut} />}
         />
-        <Route path="/create" element={user ? <CreatePage /> : <Landing />} />
-        <Route path="/note/:id" element={user ? <NoteDetail /> : <Landing />} />
+        <Route path="/note/:id" element={user ? <NoteDetail /> : <Landing user={user} onSignOut={onSignOut} />} />
         <Route
           path="/categories"
-          element={user ? <MyCategories /> : <Landing />}
+          element={user ? <MyCategories user={user} /> : <Landing user={user} onSignOut={onSignOut} />}
         />
-        <Route path="/settings" element={user ? <Settings /> : <Landing />} />
-        <Route path="*" element={<Notfound />} />
+        <Route path="/settings" element={user ? <Settings user={user} /> : <Landing user={user} onSignOut={onSignOut} />} />
+        <Route path="*" element={<Notfound user={user} onSignOut={onSignOut} />} />
       </Routes>
     </div>
   );

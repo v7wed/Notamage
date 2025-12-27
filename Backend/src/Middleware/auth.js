@@ -3,8 +3,7 @@ import User from "../Models/User.js";
 
 export default async function protect(req, res, next) {
   if (
-    req.headers.authorization &&
-    req.headers.authorization.startsWith("Bearer")
+    req.headers?.authorization?.startsWith("Bearer")
   ) {
     try {
       const token = req.headers.authorization.split(" ")[1];
@@ -20,9 +19,9 @@ export default async function protect(req, res, next) {
       }
       return res
         .status(401)
-        .json({ message: "Error verifying the auth token" });
+        .json({ name: "AuthNotValidError", message: "Error verifying the auth token" });
     }
   } else {
-    return res.status(401).json({ message: "No valid auth provided" });
+    return res.status(401).json({ name: "NoAuthProvidedError", message: "No valid auth provided" });
   }
 }
