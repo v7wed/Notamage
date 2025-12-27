@@ -1,7 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;800&family=Lora:ital,wght@0,400;0,500;0,600;1,400&display=swap');
 
 /* Sprite Animation System */
-@import './styles/sprites.css';
+@import 'sprites.css';
 
 @tailwind base;
 @tailwind components;

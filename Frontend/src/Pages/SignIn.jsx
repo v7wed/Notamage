@@ -21,27 +21,27 @@ const SignIn = ({ setUser }) => {
         Password: password,
       });
       localStorage.setItem("token", response.data.token);
-      // Transform to match the structure from /users/me (uses _id, not id)
-      setUser({
-        _id: response.data.id,
-        Name: response.data.Name,
-        Email: response.data.Email,
-      });
-
-      // Small delay to ensure React state update propagates before navigation
-
+      setUser(response.data);
       navigate("/home");
 
     } catch (err) {
-      setError(err.response?.data?.message || "Failed to sign in. Please try again.");
-      console.error(`error in handleSubmit in signin page ${err}`);
+
+      setError(err.response?.data?.message || "Failed to sign in. Please try again later.");
+      console.error(`error in handleSubmit in signin page ${err.response.data.name} ${err.status}`);
     } finally {
       setLoading(false);
     }
   }
 
   return (
-    <div className="min-h-screen bg-base-200 flex flex-col">
+    <div className="min-h-screen bg-base-200 flex flex-col relative">
+      {/* Back to Home */}
+      <Link
+        to="/"
+        className="btn btn-ghost btn-sm font-medieval text-base-content/60 absolute top-4 left-4 z-10"
+      >
+        ← Back
+      </Link>
       {/* Main content */}
       <div className="flex-1 flex items-center justify-center px-4 py-8">
         <div className="w-full max-w-md">
@@ -83,7 +83,7 @@ const SignIn = ({ setUser }) => {
                     <Mail className="size-4 text-base-content/50" />
                     <input
                       type="email"
-                      placeholder="wizard@realm.com"
+                      placeholder="thewizard@realmage.com"
                       className="grow font-body"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
@@ -102,7 +102,7 @@ const SignIn = ({ setUser }) => {
                     <Lock className="size-4 text-base-content/50" />
                     <input
                       type="password"
-                      placeholder="Your secret spell"
+                      placeholder="Your secret unexpected phrase"
                       className="grow font-body"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
@@ -122,7 +122,7 @@ const SignIn = ({ setUser }) => {
                   ) : (
                     <>
                       <LogIn className="size-5" />
-                      <span className="font-medieval">Enter the Guild</span>
+                      <span className="font-medieval">Sign In</span>
                     </>
                   )}
                 </button>
@@ -130,7 +130,7 @@ const SignIn = ({ setUser }) => {
 
               {/* Divider */}
               <div className="divider text-base-content/40 text-sm font-body my-6">
-                New to the realm?
+                Or
               </div>
 
               {/* Sign Up Link */}
@@ -144,13 +144,6 @@ const SignIn = ({ setUser }) => {
                 </Link>
               </p>
 
-              {/* Back to Home */}
-              <Link
-                to="/"
-                className="btn btn-ghost btn-sm mt-4 font-medieval text-base-content/60"
-              >
-                ← Return to Landing
-              </Link>
             </div>
           </div>
         </div>

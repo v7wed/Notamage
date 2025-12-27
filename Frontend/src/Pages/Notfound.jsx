@@ -4,11 +4,11 @@ import { Home } from "lucide-react";
 import Navbar from "../Components/NavBar";
 import Footer from "../Components/Footer";
 
-const Notfound = ({ user, SignOut }) => {
+const Notfound = ({ user, onSignOut }) => {
   return (
     <div className="min-h-screen flex flex-col bg-base-100">
-      <Navbar user={user} onSignOut={SignOut} />
-      
+      <Navbar user={user} onSignOut={onSignOut} />
+
       <main className="flex-1 flex flex-col items-center justify-center px-4 py-12">
         {/* 404 Image */}
         <img

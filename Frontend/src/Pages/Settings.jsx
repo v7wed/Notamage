@@ -14,7 +14,7 @@ import {
 } from "lucide-react";
 
 import api from "../lib/axios.js";
-import "../styles/HomePage.css"; // Reuse parchment styles
+import "../styles/HomePage.css";
 
 const Settings = ({ user }) => {
   const [email, setEmail] = useState(user?.Email || "");
@@ -34,7 +34,7 @@ const Settings = ({ user }) => {
 
     setLoading(true);
     try {
-      await api.put("/auth/update-email", { Email: email.trim() });
+      await api.put("/auth/email", { Email: email.trim() });
       toast.success("Email updated successfully.");
       setIsEditingEmail(false);
     } catch (error) {
@@ -58,7 +58,7 @@ const Settings = ({ user }) => {
 
     setLoading(true);
     try {
-      await api.put("/auth/update-password", {
+      await api.put("/auth/password", {
         oldPassword,
         newPassword
       });
@@ -98,7 +98,7 @@ const Settings = ({ user }) => {
                 </div>
                 <div>
                   <h3 className="font-medieval text-xl text-ink-brown">Email Address</h3>
-                  <p className="text-sm text-ink-faded font-body">Your registered mystical portal</p>
+                  <p className="text-sm text-ink-faded font-body">Your registered email</p>
                 </div>
               </div>
 
@@ -192,7 +192,7 @@ const Settings = ({ user }) => {
               <form onSubmit={handleUpdatePassword} className="space-y-4">
                 <div className="form-control">
                   <label className="label">
-                    <span className="label-text font-medieval">Current Incantation</span>
+                    <span className="label-text font-medieval">Current Password</span>
                   </label>
                   <input
                     type="password"
@@ -206,7 +206,7 @@ const Settings = ({ user }) => {
 
                 <div className="form-control">
                   <label className="label">
-                    <span className="label-text font-medieval">New Incantation</span>
+                    <span className="label-text font-medieval">New Password</span>
                   </label>
                   <input
                     type="password"
@@ -220,7 +220,7 @@ const Settings = ({ user }) => {
 
                 <div className="form-control">
                   <label className="label">
-                    <span className="label-text font-medieval">Confirm New Incantation</span>
+                    <span className="label-text font-medieval">Confirm New Password</span>
                   </label>
                   <input
                     type="password"

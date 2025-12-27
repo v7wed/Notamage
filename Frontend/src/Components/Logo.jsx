@@ -1,7 +1,7 @@
 import { Scroll } from "lucide-react";
 import { Link } from "react-router";
 
-// Reusable logo component with optional sizing overrides for icon/text spacing
+
 const Logo = ({
   to = "/",
   iconSize = "size-8",

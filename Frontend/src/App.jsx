@@ -63,13 +63,13 @@ const App = () => {
           path="/home"
           element={user ? <HomePage user={user} onSignOut={onSignOut} /> : <Landing user={user} onSignOut={onSignOut} />}
         />
-        <Route path="/note/:id" element={user ? <NoteDetail user={user} /> : <Landing user={user} onSignOut={onSignOut} />} />
+        <Route path="/note/:id" element={user ? <NoteDetail /> : <Landing user={user} onSignOut={onSignOut} />} />
         <Route
           path="/categories"
           element={user ? <MyCategories user={user} /> : <Landing user={user} onSignOut={onSignOut} />}
         />
         <Route path="/settings" element={user ? <Settings user={user} /> : <Landing user={user} onSignOut={onSignOut} />} />
-        <Route path="*" element={<Notfound user={user} />} />
+        <Route path="*" element={<Notfound user={user} onSignOut={onSignOut} />} />
       </Routes>
     </div>
   );

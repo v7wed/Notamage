@@ -32,12 +32,7 @@ const SignUp = ({ setUser }) => {
     try {
       const response = await api.post("/users/reg", formData);
       localStorage.setItem("token", response.data.token);
-      // Transform to match the structure from /users/me (uses _id, not id)
-      setUser({
-        _id: response.data.id,
-        Name: response.data.Name,
-        Email: response.data.Email,
-      });
+      setUser(response.data);
       navigate("/home");
     } catch (err) {
       setError(err.response?.data?.message || "Failed to create account. Please try again.");
@@ -48,7 +43,14 @@ const SignUp = ({ setUser }) => {
   }
 
   return (
-    <div className="min-h-screen bg-base-200 flex flex-col">
+    <div className="min-h-screen bg-base-200 flex flex-col relative">
+      {/* Back to Home */}
+      <Link
+        to="/"
+        className="btn btn-ghost btn-sm font-medieval text-base-content/60 absolute top-4 left-4 z-10"
+      >
+        ← Back
+      </Link>
       {/* Main content */}
       <div className="flex-1 flex items-center justify-center px-4 py-8">
         <div className="w-full max-w-md">
@@ -66,10 +68,10 @@ const SignUp = ({ setUser }) => {
 
               {/* Title */}
               <h1 className="text-3xl font-bold text-primary font-medieval mb-1">
-                Join the Guild
+                Welcome, Stranger
               </h1>
               <p className="text-base-content/60 font-body mb-6">
-                Begin your magical journey today
+                Everyone has something to write, don't they?
               </p>
 
               {/* Error Alert */}
@@ -91,7 +93,7 @@ const SignUp = ({ setUser }) => {
                     <input
                       type="text"
                       name="Name"
-                      placeholder="Your mystical name"
+                      placeholder="Your name"
                       className="grow font-body"
                       value={formData.Name}
                       onChange={handleChange}
@@ -111,7 +113,7 @@ const SignUp = ({ setUser }) => {
                     <input
                       type="email"
                       name="Email"
-                      placeholder="wizard@realm.com"
+                      placeholder="thewizard@realmage.com"
                       className="grow font-body"
                       value={formData.Email}
                       onChange={handleChange}
@@ -192,17 +194,10 @@ const SignUp = ({ setUser }) => {
                   to="/signin"
                   className="link link-primary font-semibold font-medieval hover:link-hover"
                 >
-                  Return to Guild
+                  Sign In
                 </Link>
               </p>
 
-              {/* Back to Home */}
-              <Link
-                to="/"
-                className="btn btn-ghost btn-sm mt-4 font-medieval text-base-content/60"
-              >
-                ← Return to Landing
-              </Link>
             </div>
           </div>
         </div>

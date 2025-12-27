@@ -14,7 +14,7 @@ const app = express();
 const PORT = process.env.PORT;
 const __dirname = path.resolve();
 
-//middleware
+//middlewares
 if (process.env.NODE_ENV !== "production") {
   app.use(
     cors({
@@ -24,7 +24,7 @@ if (process.env.NODE_ENV !== "production") {
 }
 
 app.use(express.json());
-//app.use(global_limit)
+
 
 app.use("/api/users", authRoutes);
 app.use("/api/notes", notesRoutes);
@@ -32,6 +32,7 @@ app.use("/api/categ", categRoutes);
 
 if (process.env.NODE_ENV === "production") {
   app.use(express.static(path.join(__dirname, "../Frontend/dist")));
+
   app.get("*", (_, res) => {
     res.sendFile(path.join(__dirname, "../Frontend/dist/index.html"));
   });

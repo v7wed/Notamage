@@ -3,16 +3,16 @@ import { ArrowLeft } from "lucide-react";
 
 const About = () => {
   return (
-    <div 
+    <div
       className="min-h-screen flex flex-col relative overflow-hidden"
-      style={{ 
-        background: "#1d1c21" 
+      style={{
+        background: "#1d1c21"
       }}
     >
       {/* Back button */}
       <div className="p-4 md:p-6 relative z-10">
-        <Link 
-          to="/" 
+        <Link
+          to="/"
           className="btn btn-ghost btn-sm text-gray-400 hover:text-white hover:bg-white/10"
         >
           <ArrowLeft className="size-4" />
@@ -30,17 +30,17 @@ const About = () => {
 
           {/* First paragraph */}
           <p className="text-gray-300 font-body text-lg md:text-xl leading-relaxed mb-6">
-            This is more than just a notes app — it's my first full-stack AI project built from the ground up, 
-            designed with production in mind. Every line of code, every feature, every decision about scalability 
-            was made by me alone. No tutorials to follow step-by-step, no hand-holding — just a vision 
+            This is more than just a notes app — it's my first full-stack AI project built from the ground up,
+            designed with production in mind. Every line of code, every feature, every decision about scalability
+            was made by me alone. No tutorials to follow step-by-step, no hand-holding — just a vision
             and the determination to bring it to life.
           </p>
 
           {/* Second paragraph */}
           <p className="text-gray-400 font-body text-base md:text-lg leading-relaxed mb-8">
-            Notes Mage represents a milestone in my journey as a developer. It's where I learned to think 
-            about real users, real problems, and real solutions. The mage you see isn't just a mascot — 
-            he's a symbol of the magic that happens when curiosity meets persistence. This project is 
+            Notes Mage represents a milestone in my journey as a developer. It's where I learned to think
+            about real users, real problems, and real solutions. The mage you see isn't just a mascot —
+            he's a symbol of the magic that happens when curiosity meets persistence. This project is
             special to me, and I'm proud to share it with the world.
           </p>
 
@@ -49,9 +49,9 @@ const About = () => {
             <p className="text-gray-500 font-body text-sm pt-2">
               Want to connect or support my journey?
             </p>
-            <a 
-              href="https://www.linkedin.com/in/YOUR-LINKEDIN-HERE" 
-              target="_blank" 
+            <a
+              href="https://www.linkedin.com/in/v7wed/"
+              target="_blank"
               rel="noopener noreferrer"
               className="btn btn-outline border-primary/50 text-primary hover:bg-primary hover:border-primary hover:text-white gap-2"
             >
@@ -71,13 +71,16 @@ const About = () => {
 
       {/* Background image at bottom */}
       <div className="absolute bottom-0 left-0 right-0 pointer-events-none">
-        <img 
-          src="/aboutimageupdated.png" 
-          alt="A mysterious forest scene with silhouettes"
-          className="w-full object-contain opacity-40"
-        />
+        <picture>
+          <source media="(max-width: 768px)" srcSet="/aboutimage.png" />
+          <img
+            src="/aboutimageupdated.png"
+            alt="A mysterious forest scene with silhouettes"
+            className="w-full object-contain opacity-40"
+          />
+        </picture>
         {/* Fade overlay on top of image */}
-        <div 
+        <div
           className="absolute inset-0"
           style={{
             background: "linear-gradient(to bottom, #1d1c21 0%, transparent 30%)"

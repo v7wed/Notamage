@@ -5,14 +5,16 @@ import { Sparkles, ScrollText, Wand2 } from "lucide-react";
 import NavBar from "../Components/NavBar.jsx";
 import Footer from "../Components/Footer.jsx";
 
-const Landing = ({user, onSignOut}) => {
+
+const Landing = ({ user, onSignOut }) => {
   return (
     <div className="min-h-screen flex flex-col">
       <NavBar user={user} onSignOut={onSignOut} />
+
       {/* Hero Section */}
       <div className="flex-1 flex flex-col items-center justify-center px-4 py-16 mt-14">
         <div className="max-w-4xl mx-auto text-center space-y-8">
-          {/* Main Title */}
+
           <div className="space-y-4">
             <div className="flex items-center justify-center gap-3 mb-4">
               <Wand2 className="size-8 md:size-12 text-primary" />
@@ -22,9 +24,8 @@ const Landing = ({user, onSignOut}) => {
               <Sparkles className="size-8 md:size-12 text-primary" />
             </div>
 
-            {/* Mage Animation */}
             <div className="flex justify-center my-6">
-              <div 
+              <div
                 className="sprite sprite-mage-landing drop-shadow-2xl"
                 role="img"
                 aria-label="Animated wizard reading a magical scroll"
@@ -32,35 +33,38 @@ const Landing = ({user, onSignOut}) => {
             </div>
 
             <p className="text-2xl md:text-3xl text-base-content/80 font-medieval">
-              Summon Your Thoughts, Master Your Knowledge
+              Write Your Thoughts, Organize Your Knowledge
             </p>
           </div>
 
-          {/* Description */}
           <p className="text-lg text-base-content/70 max-w-2xl mx-auto font-body">
-            A mystical companion that helps you organize, create, and manage your notes with the wisdom of an ancient wizard.
+            A place where you can create, brainstorm, organize notes, and tasks. With the help of an AI assistant.
           </p>
 
           {/* CTA Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center pt-4">
-            <Link to="/signup" className="btn btn-primary btn-lg">
-              <ScrollText className="size-5" />
-              <span className="font-medieval">Begin Your Journey</span>
-            </Link>
-            <Link to="/signin" className="btn btn-outline btn-lg">
-              <span className="font-medieval">Return to Guild</span>
-            </Link>
+            {!user && <>
+              <Link to="/signup" className="btn btn-primary btn-lg">
+                <ScrollText className="size-5" />
+                <span className="font-medieval">Give it a try</span>
+              </Link>
+              <Link to="/signin" className="btn btn-outline btn-lg">
+                <span className="font-medieval">Sign In</span>
+              </Link></>}
+            {user && <Link to="/home" className="btn btn-primary btn-md font-medieval">
+              <span>My Notes</span>
+            </Link>}
           </div>
         </div>
       </div>
 
-      {/* AI Companion Section */}
+      {/* AI Assistant Features Section */}
       <section className="py-20 px-4 bg-base-200">
         <div className="max-w-6xl mx-auto">
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <div>
               <h2 className="text-4xl font-bold text-primary font-medieval mb-6">
-                Your Personal Wizard Companion
+                Your Personal Companion
               </h2>
               <div className="space-y-4 text-base-content/80">
                 <p className="font-body text-lg">
@@ -231,15 +235,16 @@ const Landing = ({user, onSignOut}) => {
             </div>
           </div>
           <div className="mt-12">
-            <Link to="/signup" className="btn btn-primary btn-lg">
-              <ScrollText className="size-5" />
-              <span className="font-medieval">Start Your Quest</span>
-            </Link>
+            {!user &&
+              <Link to="/signup" className="btn btn-primary btn-lg">
+                <ScrollText className="size-5" />
+                <span className="font-medieval">Start Your Quest</span>
+              </Link>}
           </div>
         </div>
       </section>
-<Footer />
-    </div>
+      <Footer />
+    </div >
   );
 };
 

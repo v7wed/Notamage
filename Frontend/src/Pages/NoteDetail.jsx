@@ -1,51 +1,54 @@
 import { useNavigate, useParams } from "react-router";
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef } from "react";
 import { ArrowLeft, Save, LoaderIcon } from "lucide-react";
 import { toast } from "react-hot-toast";
 
 import api from "../lib/axios";
-import DiscardChangesModal from "../Components/DiscardChangesModal";
+import DiscardWindow from "../Components/DiscardWindow.jsx";
 import "../styles/NoteDetail.css";
+import Loading from "../Components/Loading.jsx";
 
-const NoteDetail = ({ user }) => {
+const NoteDetail = () => {
   const [note, setNote] = useState(null);
   const [originalNote, setOriginalNote] = useState(null);
+
+  const isNewNote = useRef(false);
   const [loading, setLoading] = useState(true);
+
   const [saving, setSaving] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
-  const [showDiscardModal, setShowDiscardModal] = useState(false);
-  const [isNewNote, setIsNewNote] = useState(false);
+  const [showDiscardWindow, setShowDiscardWindow] = useState(false);
+
 
   const navigate = useNavigate();
   const { id } = useParams();
   const contentRef = useRef(null);
 
-  // Fetch the note on mount
+  // Fetch note on mount
   useEffect(() => {
     const fetchNote = async () => {
       try {
         const response = await api.get(`/notes/${id}`);
         const fetchedNote = response.data;
-        setNote(fetchedNote);
         setOriginalNote(fetchedNote);
+        setNote(fetchedNote);
 
-        // Check if this is a newly created empty note
         if (!fetchedNote.title.trim() && !fetchedNote.content.trim()) {
-          setIsNewNote(true);
+          isNewNote.current = true;
         }
       } catch (error) {
         console.error("Error fetching note:", error);
         toast.error("Failed to load note");
-        navigate("/home", { replace: true });
+        navigate("/home");
         return;
       } finally {
         setLoading(false);
       }
     };
     fetchNote();
-  }, [id, navigate]);
+  }, [id]);
 
-  // Track changes
+  // Track changes (for save button visiblity)
   useEffect(() => {
     if (note && originalNote) {
       const changed =
@@ -55,35 +58,35 @@ const NoteDetail = ({ user }) => {
     }
   }, [note, originalNote]);
 
-  // Auto-resize textarea
+  // Track note content (for text area auto resize)
   useEffect(() => {
     const textarea = contentRef.current;
     if (textarea) {
+      const scrollPos = window.scrollY;
+
       textarea.style.height = 'auto';
       textarea.style.height = `${Math.max(textarea.scrollHeight, window.innerHeight - 280)}px`;
+
+      window.scrollTo(0, scrollPos);
     }
   }, [note?.content]);
 
-  // Handle save
-  const handleSave = useCallback(async () => {
-    if (!note) return false;
 
+  const handleSave = async () => {
     setSaving(true);
     try {
       await api.put(`/notes/${id}`, note);
       setOriginalNote({ ...note });
       setHasChanges(false);
-      setIsNewNote(false);
-      toast.success("Scroll saved successfully");
-      return true;
+      isNewNote.current = false;
+      toast.success("Note saved successfully");
     } catch (error) {
       console.error("Error saving note:", error);
-      toast.error("Failed to save scroll");
-      return false;
+      toast.error("Failed to save note");
     } finally {
       setSaving(false);
     }
-  }, [id, note]);
+  }
 
   // Handle delete (for empty new notes)
   const handleDeleteEmptyNote = async () => {
@@ -94,52 +97,45 @@ const NoteDetail = ({ user }) => {
     }
   };
 
-  // Check if note should be deleted (empty new note)
   const shouldDeleteNote = () => {
-    if (!note) return false;
-    return isNewNote && !note.title.trim() && !note.content.trim();
+    return isNewNote.current && !note.title.trim() && !note.content.trim();
+    // it's a new note + the user didn't write anything on it (=delete it from backend)
   };
 
-  // Handle back navigation
+
   const handleBack = () => {
-    // If it's a new empty note, delete it and go back
     if (shouldDeleteNote()) {
       handleDeleteEmptyNote();
       navigate("/home");
       return;
     }
 
-    // If there are unsaved changes, show the modal
+
     if (hasChanges) {
-      setShowDiscardModal(true);
+      setShowDiscardWindow(true);
       return;
-    }
-
-    // No changes, just go back
-    navigate("/home");
-  };
-
-  // Modal actions
-  const handleModalSave = async () => {
-    const success = await handleSave();
-    if (success) {
-      setShowDiscardModal(false);
+    } else {
       navigate("/home");
     }
   };
 
-  const handleModalDiscard = () => {
-    // If it was a new note that now has content but user discards, delete it
-    if (isNewNote) {
+  // Modal actions
+  const handleSaveWindow = async () => {
+    const success = await handleSave();
+    if (success) {
+      setShowDiscardWindow(false);
+      navigate("/home");
+    }
+  };
+
+  const handleDiscardChanges = () => {
+    if (isNewNote.current) {
       handleDeleteEmptyNote();
     }
-    setShowDiscardModal(false);
+    setShowDiscardWindow(false);
     navigate("/home");
   };
 
-  const handleModalCancel = () => {
-    setShowDiscardModal(false);
-  };
 
   // Handle input changes
   const handleTitleChange = (e) => {
@@ -151,13 +147,8 @@ const NoteDetail = ({ user }) => {
   };
 
   // Loading state
-  if (loading) {
-    return (
-      <div className="loading-screen">
-        <LoaderIcon className="loading-spinner size-12" />
-      </div>
-    );
-  }
+  if (loading) return <Loading />
+
 
   return (
     <>
@@ -187,9 +178,9 @@ const NoteDetail = ({ user }) => {
             type="text"
             className="title-input"
             placeholder="Title"
-            value={note?.title || ""}
+            value={note.title}
             onChange={handleTitleChange}
-            autoFocus={isNewNote}
+            autoFocus={isNewNote.current}
           />
 
           {/* Content textarea */}
@@ -197,12 +188,12 @@ const NoteDetail = ({ user }) => {
             ref={contentRef}
             className="content-textarea"
             placeholder="Write your thoughts here..."
-            value={note?.content || ""}
+            value={note.content}
             onChange={handleContentChange}
           />
         </div>
 
-        {/* Floating save button - only show when there are changes */}
+        {/* Save button */}
         {hasChanges && (
           <button
             className="floating-save"
@@ -216,11 +207,11 @@ const NoteDetail = ({ user }) => {
       </div>
 
       {/* Discard Changes Modal */}
-      <DiscardChangesModal
-        isOpen={showDiscardModal}
-        onSave={handleModalSave}
-        onDiscard={handleModalDiscard}
-        onCancel={handleModalCancel}
+      <DiscardWindow
+        isOpen={showDiscardWindow}
+        onSave={handleSaveWindow}
+        onDiscard={handleDiscardChanges}
+        onCancel={() => setShowDiscardWindow(false)}
         saving={saving}
       />
     </>

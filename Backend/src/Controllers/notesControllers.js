@@ -1,19 +1,9 @@
 import Note from "../Models/Note.js";
 
-export async function getAllNotes(_, res) {
-  try {
-    const notes = await Note.find().sort({ createdAt: -1 });
-    return res.status(200).json(notes);
-  } catch (error) {
-    console.error("error in getAllNotes controller: ", error);
-    res.status(500).json({ message: "internal server error" });
-  }
-}
-
 export async function getUserNotes(req, res) {
   try {
     const { search } = req.query
-    let query = { userID: req.params.id }
+    let query = { userID: req.params.userid }
     if (search?.trim()) {
       query = { userID: req.params.id, $or: [{ title: { $regex: search, $options: 'i' } }, { content: { $regex: search, $options: 'i' } }] }
     }
@@ -44,21 +34,20 @@ export async function getNote(req, res) {
 export const createNote = async (req, res) => {
   try {
     const { title, content, userID, categoryID } = req.body;
-    const newNote = new Note({ title, content, userID, categoryID });
-    await newNote.save();
+    const newNote = await Note.create({ title, content, userID, categoryID });
     return res.status(201).json(newNote);
   } catch (error) {
     console.error("error in createNote controller: ", error);
-    res.status(500).json({ message: "internal server error" });
+    res.status(500).json({ message: "internal server error", error: error });
   }
 };
 
 export async function updateNote(req, res) {
   try {
-    const { title, content, userID, categoryID } = req.body;
+    const { title, content, categoryID } = req.body;
     const updatedNote = await Note.findByIdAndUpdate(
       req.params.id,
-      { title, content, userID, categoryID },
+      { title, content, categoryID },
       { new: true }
     );
     if (!updatedNote)

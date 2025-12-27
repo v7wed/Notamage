@@ -1,8 +1,8 @@
 {
-  "name": "notes_app",
-  "version": "1.0.0",
-  "description": "<div align=\"center\">",
-  "main": "index.js",
+  "name": "notamage",
+  "version": "1.0.8",
+  "description": "a notes app with an AI assistant",
+  "main": "Backend/src/server.js",
   "scripts": {
     "build": "npm install --prefix Frontend && npm install --prefix Backend && npm run build --prefix Frontend",
     "start": "npm run start --prefix Backend",

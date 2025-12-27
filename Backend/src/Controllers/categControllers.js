@@ -33,7 +33,7 @@ export async function createCateg(req, res) {
   }
 }
 
-export async function clearCateg(req, res) {
+export async function clearCateg(req, res) { //clear a category from all its notes (uncategorize them)
   try {
     const categoryID = req.params.id;
     await Note.updateMany({ categoryID }, { $set: { categoryID: null } });
@@ -56,7 +56,6 @@ export async function addtoCateg(req, res) {
         .json({ message: "notesID must be a non-empty array" });
     }
 
-    // If categoryID is provided (not null), verify it exists
     if (categoryID) {
       const category = await Category.findById(categoryID);
       if (!category) {
@@ -64,16 +63,14 @@ export async function addtoCateg(req, res) {
       }
     }
 
-    // Update all notes - replace their categoryID (or set to null to uncategorize)
+
     const result = await Note.updateMany(
       { _id: { $in: notesID } },
-      { $set: { categoryID: categoryID || null } }
+      { $set: { categoryID: categoryID } }
     );
 
     return res.status(200).json({
-      message: categoryID
-        ? "Notes added to category successfully"
-        : "Notes uncategorized successfully",
+      message: "Notes added to category successfully",
       modifiedCount: result.modifiedCount,
     });
   } catch (error) {
@@ -101,7 +98,6 @@ export async function updateCateg(req, res) {
 export async function deleteCateg(req, res) {
   try {
     const categoryID = req.params.id;
-    // Check if there are still notes associated (safety check)
     const hasNotes = await Note.findOne({ categoryID });
     if (!hasNotes) {
       const result = await Category.findByIdAndDelete(categoryID);

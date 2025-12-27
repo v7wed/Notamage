@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { toast } from "react-hot-toast";
 import { CheckSquare } from "lucide-react";
+import { useNavigate } from "react-router";
 
 import api from "../lib/axios.js";
 import NavBar from "../Components/NavBar.jsx";
@@ -9,6 +10,7 @@ import NoteCard from "../Components/NoteCard.jsx";
 import NotesNotFound from "../Components/NotesNotFound.jsx";
 import AddToModal from "../Components/AddTo.jsx";
 import "../styles/HomePage.css";
+
 
 const HomePage = ({ user, onSignOut }) => {
   const [notes, setNotes] = useState([]);
@@ -21,11 +23,12 @@ const HomePage = ({ user, onSignOut }) => {
 
   // Compute mode based on selectedNotes - if any are selected, we're in selection mode
   const mode = selectedNotes.length > 0 ? "home_se" : "home";
+  const navigate = useNavigate();
 
   // Fetch notes and categories
   const fetchData = async () => {
     try {
-      const notesRes = await api.get(`/notes/user/${user._id}?search=${search}`);
+      const notesRes = await api.get(`/notes/for/${user._id}?search=${search}`);
       const categRes = await api.get(`/categ/for/${user._id}`);
       setNotes(notesRes.data);
       setCategs(categRes.data);
@@ -59,6 +62,25 @@ const HomePage = ({ user, onSignOut }) => {
   const handleSelectAll = () => {
     const allNoteIds = notes.map((note) => note._id);
     setSelectedNotes(allNoteIds);
+  };
+
+  const handleCreateNote = async () => {
+    if (!user?._id) {
+      toast.error("Please sign in to create notes");
+      return;
+    }
+    try {
+      const response = await api.post("/notes", { userID: user._id });
+      const newNote = response.data;
+      navigate(`/note/${newNote._id}`);
+    } catch (error) {
+      console.error("Error creating note:", error);
+      if (error.response?.status === 429) {
+        toast.error("Too many requests, please wait", { icon: "💀" });
+      } else {
+        toast.error("Failed to create new scroll");
+      }
+    }
   };
 
   // Select all notes in a specific category (used in category view)
@@ -140,11 +162,12 @@ const HomePage = ({ user, onSignOut }) => {
         onOpenAddTo={handleOpenAddTo}
         catMode={catMode}
         setCatMode={setCatMode}
+        handleCreateNote={handleCreateNote}
       />
       <div className="max-w-7xl mx-auto p-4 mt-6">
         {loading && <Loading />}
 
-        {notes.length === 0 && !loading && <NotesNotFound search={search} />}
+        {notes.length === 0 && !loading && <NotesNotFound search={search} onCreateFirstNote={handleCreateNote} />}
 
         {/* Select All Button - appears in selection mode (regular view) */}
         {!catMode && notes.length > 0 && mode === "home_se" && (

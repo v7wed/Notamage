@@ -1,4 +1,5 @@
 import { notelimiter } from "../Config/upstash.js";
+
 export async function NoteLimit(req, res, next) {
   try {
     const identifier = `noteLimit: ${req.body.userID}`;
@@ -11,6 +12,7 @@ export async function NoteLimit(req, res, next) {
         "X-RateLimit-Remaining": remaining,
         "X-RateLimit-Reset": new Date(reset).toISOString(),
       });
+
     } else {
       res.status(429).json({
         message: "too many note creation",

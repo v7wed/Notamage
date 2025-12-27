@@ -1,7 +1,7 @@
 import { NotebookIcon, SearchX } from "lucide-react";
 import { Link } from "react-router";
 
-const NotesNotFound = ({ search = "" }) => {
+const NotesNotFound = ({ search = "", onCreateFirstNote }) => {
 
   if (search.trim()) {
     return (
@@ -30,9 +30,9 @@ const NotesNotFound = ({ search = "" }) => {
           Ready to organize your thoughts? Manifest your first scroll to begin your journey.
         </p>
       </div>
-      <Link to="/create" className="btn btn-primary font-medieval shadow-lg px-8">
+      <button onClick={onCreateFirstNote} className="btn btn-primary font-medieval shadow-lg px-8">
         Manifest First Note
-      </Link>
+      </button>
     </div>
   );
 };

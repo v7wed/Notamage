@@ -1,17 +1,9 @@
-import { Link, useNavigate } from "react-router";
-import { useState } from "react";
-import { Search, Feather, Filter, Trash2, X, FolderPlus, Clock, LoaderIcon } from "lucide-react";
-import { toast } from "react-hot-toast";
+import { Link } from "react-router";
+import { Search, Feather, Filter, Trash2, X, FolderPlus, Clock } from "lucide-react";
 
-import api from "../lib/axios";
+
 import Logo from "./Logo.jsx";
 import UserProfileDropdown from "./UserProfileDropdown.jsx";
-
-const VARIANTS = {
-  text: "text-sm font-medieval text-base-content/70 hover:text-primary transition-colors",
-  ghost: "btn btn-ghost btn-sm font-medieval",
-  primary: "btn btn-primary btn-sm font-medieval",
-};
 
 const Navbar = ({
   selectedNotes = [],
@@ -23,68 +15,40 @@ const Navbar = ({
   onDeleteSelected,
   onOpenAddTo,
   catMode,
-  setCatMode
+  setCatMode,
+  handleCreateNote
 }) => {
-  const [creatingNote, setCreatingNote] = useState(false);
-  const navigate = useNavigate();
-
-  const handleChange = (e) => {
-    setSearch(e.target.value);
-  };
-
-  const handleCreateNote = async () => {
-    if (!user?._id) {
-      toast.error("Please sign in to create notes");
-      return;
-    }
-
-    setCreatingNote(true);
-    try {
-      const response = await api.post("/notes", {
-        title: "",
-        content: "",
-        userID: user._id
-      });
-      const newNote = response.data;
-      navigate(`/note/${newNote._id}`);
-    } catch (error) {
-      console.error("Error creating note:", error);
-      if (error.response?.status === 429) {
-        toast.error("Too many requests, please wait", { icon: "💀" });
-      } else {
-        toast.error("Failed to create new scroll");
-      }
-    } finally {
-      setCreatingNote(false);
-    }
-  };
-
+  const handleChange = (e) => setSearch(e.target.value);
   const selectionCount = selectedNotes.length;
+
+
 
   return (
     <header className="bg-base-300/30 backdrop-blur-md border-b border-base-content/10 sticky top-0 z-50">
+
+      {/* Logo  */}
       <div className="mx-auto max-w-7xl px-4 py-3">
         <div className="flex items-center justify-between gap-4">
           <Logo textSize="text-xl sm:text-3xl" iconSize="size-6 sm:size-8" />
 
-          {/* Search Bar - hidden in selection mode */}
+          {/* Desktop Search */}
           {mode === "home" && (
             <div className="flex-1 max-w-2xl mx-4 hidden md:block">
-              <div className="relative group">
-                <Search className="absolute left-4 top-1/2 -translate-y-1/2 size-5 text-base-content/50 group-focus-within:text-primary pointer-events-none transition-colors" />
+              <label className="input input-md flex items-center gap-3 bg-base-100 border border-base-content/20 focus-within:border-primary font-medieval group transition-colors">
+                <Search className="size-5 text-base-content/50 group-focus-within:text-primary transition-colors" />
                 <input
                   type="text"
                   placeholder="Search your mystical scrolls..."
-                  className="input w-full pl-12 pr-4 bg-base-100 border border-base-content/20 focus:border-primary focus:outline-none font-medieval text-base placeholder:text-base-content/40 transition-colors"
+                  className="grow"
                   onChange={handleChange}
                 />
-              </div>
+              </label>
             </div>
           )}
 
-          {/* Selection Mode Indicator - shows count when selecting */}
+          {/* Selection Count */}
           {mode === "home_se" && (
-            <div className="flex-1 flex items-center justify-center">
+            <div className="flex-1 flex justify-center">
               <span className="font-medieval text-primary text-lg">
                 {selectionCount} {selectionCount === 1 ? 'scroll' : 'scrolls'} selected
               </span>
@@ -92,49 +56,43 @@ const Navbar = ({
           )}
 
           <div className="flex items-center gap-2 sm:gap-3">
-            {/* Landing page - not logged in */}
+            {/* Landing page no user */}
             {mode === "landing" && !user && (
               <>
-                <Link to="/about" className={`${VARIANTS.text} hidden sm:block`}>
+                <Link to="/about" className="text-sm font-medieval text-base-content/70 hover:text-primary transition-colors hidden sm:block">
                   About
                 </Link>
-                <Link to="/signin" className={VARIANTS.ghost}>
-                  <span>Sign In</span>
+                <Link to="/signin" className="btn btn-ghost btn-sm font-medieval">
+                  Sign In
                 </Link>
-                <Link to="/signup" className={VARIANTS.primary}>
+                <Link to="/signup" className="btn btn-primary btn-sm font-medieval">
                   <span className="hidden sm:inline">Join the Mage</span>
-                  <span className="inline sm:hidden">Join</span>
+                  <span className="sm:hidden">Join</span>
                 </Link>
               </>
             )}
 
-            {/* Landing page - logged in */}
+            {/* Landing page user */}
             {mode === "landing" && user && (
               <>
-                <Link to="/home" className={VARIANTS.primary}>
-                  <span>My Notes</span>
+                <Link to="/home" className="btn btn-primary btn-sm font-medieval">
+                  My Notes
                 </Link>
                 <UserProfileDropdown onSignOut={onSignOut} />
               </>
             )}
 
-            {/* Home mode - normal browsing */}
+            {/* Home page */}
             {mode === "home" && (
               <>
                 <button
                   onClick={handleCreateNote}
-                  disabled={creatingNote}
                   className="btn btn-primary btn-sm gap-1 font-medieval"
                 >
-                  {creatingNote ? (
-                    <LoaderIcon className="size-4 animate-spin" />
-                  ) : (
-                    <Feather className="size-4" />
-                  )}
-                  <span className="hidden sm:inline">{creatingNote ? 'Creating...' : 'Create'}</span>
+                  <Feather className="size-4" />
+                  <span className="hidden sm:inline">Create</span>
                 </button>
 
-                {/* Filter Dropdown */}
                 <div className="dropdown dropdown-end">
                   <button tabIndex={0} className="btn btn-ghost btn-sm gap-1 font-medieval border border-primary/30 hover:border-primary">
                     <Filter className="size-4" />
@@ -158,16 +116,15 @@ const Navbar = ({
               </>
             )}
 
-            {/* Selection mode - home_se */}
+
+            {/* Selection mode */}
             {mode === "home_se" && (
               <>
-                {/* Add To Category Button */}
                 <button onClick={onOpenAddTo} className="btn btn-primary btn-sm gap-1 font-medieval">
                   <FolderPlus className="size-4" />
                   <span className="hidden sm:inline">Add to</span>
                 </button>
 
-                {/* Delete Selected Button */}
                 <button
                   onClick={onDeleteSelected}
                   className="btn btn-error btn-sm gap-1 font-medieval"
@@ -176,7 +133,6 @@ const Navbar = ({
                   <span className="hidden sm:inline">Delete</span>
                 </button>
 
-                {/* Cancel Selection Button */}
                 <button
                   onClick={onClearSelection}
                   className="btn btn-ghost btn-sm gap-1 font-medieval border border-base-content/30 hover:border-error hover:text-error"
@@ -189,22 +145,22 @@ const Navbar = ({
           </div>
         </div>
 
-        {/* Mobile Search Bar - hidden in selection mode */}
+        {/* Mobile Search Bar  */}
         {mode === "home" && (
           <div className="mt-3 md:hidden">
-            <div className="relative group">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 size-5 text-base-content/50 group-focus-within:text-primary pointer-events-none transition-colors" />
+            <label className="input input-sm flex items-center gap-2 bg-base-100 border border-base-content/20 focus-within:border-primary font-medieval group transition-colors">
+              <Search className="size-4 text-base-content/50 group-focus-within:text-primary transition-colors" />
               <input
                 type="text"
                 placeholder="Search scrolls..."
-                className="input w-full pl-12 pr-4 bg-base-100 border border-base-content/20 focus:border-primary focus:outline-none font-medieval placeholder:text-base-content/40 transition-colors"
+                className="grow"
                 onChange={handleChange}
               />
-            </div>
+            </label>
           </div>
         )}
 
-        {/* Mobile Selection Info */}
+        {/* Mobile Selection Count */}
         {mode === "home_se" && (
           <div className="mt-3 md:hidden text-center">
             <span className="font-medieval text-primary">

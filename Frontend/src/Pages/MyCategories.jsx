@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate, Link } from "react-router";
+import { Link } from "react-router";
 import { toast } from "react-hot-toast";
 import {
   ArrowLeft,
@@ -8,12 +8,12 @@ import {
   Plus,
   X,
   FolderPlus,
-  Check,
-  AlertTriangle,
-  LoaderIcon
+  Check
 } from "lucide-react";
 
 import api from "../lib/axios.js";
+import CreateCategory from "../Components/CreateCategory.jsx";
+import Loading from "../Components/Loading.jsx";
 import "../styles/HomePage.css"; // Reuse parchment styles
 
 const MyCategories = ({ user }) => {
@@ -25,13 +25,10 @@ const MyCategories = ({ user }) => {
   const [editName, setEditName] = useState("");
   const [actionLoading, setActionLoading] = useState(false);
 
-  const navigate = useNavigate();
-
   const fetchCategories = async () => {
-    if (!user?._id) return;
     try {
-      const resp = await api.get(`/categ/for/${user._id}`);
-      setCategories(resp.data);
+      const res = await api.get(`/categ/for/${user._id}`);
+      setCategories(res.data);
     } catch (error) {
       console.error("Error fetching categories:", error);
       toast.error("Failed to load categories");
@@ -42,7 +39,7 @@ const MyCategories = ({ user }) => {
 
   useEffect(() => {
     fetchCategories();
-  }, [user?._id]);
+  }, [user._id]);
 
   const handleCreateCategory = async (e) => {
     e.preventDefault();
@@ -110,6 +107,7 @@ const MyCategories = ({ user }) => {
     setEditName(cat.name);
   };
 
+  if (loading) return <Loading />
   return (
     <div className="min-h-screen bg-base-200">
       <div className="max-w-4xl mx-auto p-4 md:p-8">
@@ -129,16 +127,14 @@ const MyCategories = ({ user }) => {
           </button>
         </div>
 
-        {loading ? (
-          <div className="flex justify-center items-center py-20">
-            <LoaderIcon className="size-10 animate-spin text-primary" />
-          </div>
-        ) : categories.length === 0 ? (
+
+
+        {categories.length === 0 ? (
           <div className="text-center py-20 parchment-wrapper">
             <div className="parchment-card p-10">
               <FolderPlus className="size-16 mx-auto mb-4 text-primary/40" />
-              <p className="font-medieval text-xl text-base-content/60">No mystical categories found.</p>
-              <p className="font-medieval text-sm text-base-content/40 mt-2">Create one to organize your scrolls.</p>
+              <p className="font-medieval text-xl text-base-content/60">No categories found.</p>
+              <p className="font-medieval text-sm text-base-content/40 mt-2">Create one to organize your notes.</p>
             </div>
           </div>
         ) : (
@@ -196,60 +192,14 @@ const MyCategories = ({ user }) => {
         )}
       </div>
 
-      {/* Add Category Modal */}
-      {showAddModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center">
-          {/* Backdrop */}
-          <div
-            className="absolute inset-0 bg-black/60 backdrop-blur-sm"
-            onClick={() => setShowAddModal(false)}
-          />
-
-          {/* Modal */}
-          <div className="relative bg-base-200 border border-primary/20 rounded-xl shadow-2xl w-full max-w-md mx-4 overflow-hidden animate-in zoom-in-95 fade-in duration-200">
-            <div className="p-6">
-              <h3 className="text-2xl font-medieval text-primary mb-4 flex items-center gap-2">
-                <FolderPlus className="size-6" />
-                New Category
-              </h3>
-
-              <form onSubmit={handleCreateCategory} className="space-y-4">
-                <div className="form-control">
-                  <label className="label">
-                    <span className="label-text font-medieval">Category Name</span>
-                  </label>
-                  <input
-                    type="text"
-                    placeholder="e.g. Forbidden Magic"
-                    className="input w-full bg-base-100 border border-primary/20 focus:border-primary font-medieval"
-                    value={newCategoryName}
-                    onChange={(e) => setNewCategoryName(e.target.value)}
-                    autoFocus
-                    required
-                  />
-                </div>
-
-                <div className="flex justify-end gap-3 mt-6">
-                  <button
-                    type="button"
-                    onClick={() => setShowAddModal(false)}
-                    className="btn btn-ghost font-medieval"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="submit"
-                    disabled={actionLoading || !newCategoryName.trim()}
-                    className="btn btn-primary font-medieval min-w-[100px]"
-                  >
-                    {actionLoading ? <LoaderIcon className="animate-spin size-4" /> : "Create"}
-                  </button>
-                </div>
-              </form>
-            </div>
-          </div>
-        </div>
-      )}
+      <CreateCategory
+        isOpen={showAddModal}
+        onClose={() => setShowAddModal(false)}
+        onCreate={handleCreateCategory}
+        newCategoryName={newCategoryName}
+        setNewCategoryName={setNewCategoryName}
+        loading={actionLoading}
+      />
     </div>
   );
 };

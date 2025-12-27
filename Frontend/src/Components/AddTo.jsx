@@ -43,7 +43,7 @@ const AddToModal = ({
 
             // If creating a new category first
             if (isCreatingNew && newCategoryName.trim()) {
-                const createRes = await api.post("/categ", {
+                await api.post("/categ", {
                     name: newCategoryName.trim(),
                     userID: userId
                 });

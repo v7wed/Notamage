@@ -1,5 +1,5 @@
 import { AlertTriangle, Save, X, ArrowLeft } from "lucide-react";
-const DiscardChangesModal = ({ isOpen, onSave, onDiscard, onCancel, saving }) => {
+const DiscardWindow = ({ isOpen, onSave, onDiscard, onCancel, saving }) => {
     if (!isOpen) return null;
     return (
         <div className="fixed inset-0 z-[100] flex items-center justify-center">
@@ -67,4 +67,4 @@ const DiscardChangesModal = ({ isOpen, onSave, onDiscard, onCancel, saving }) =>
         </div>
     );
 };
-export default DiscardChangesModal;
+export default DiscardWindow;
