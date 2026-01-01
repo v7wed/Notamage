@@ -11,9 +11,7 @@ import { NoteLimit } from "../Middleware/RateLimiters.js";
 
 const router = express.Router();
 
-
-
-router.get("/for/:userid", getUserNotes);
+router.get("/user/:id", getUserNotes);
 router.get("/:id", getNote);
 router.post("/", NoteLimit, createNote);
 router.put("/:id", NoteLimit, updateNote);

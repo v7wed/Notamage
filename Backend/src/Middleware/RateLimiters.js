@@ -1,6 +1,10 @@
 import { notelimiter } from "../Config/upstash.js";
 
 export async function NoteLimit(req, res, next) {
+  if (process.env.NODE_ENV === 'test') {
+    return next();
+  }
+
   try {
     const identifier = `noteLimit: ${req.body.userID}`;
     const { success, limit, remaining, reset } = await notelimiter.limit(

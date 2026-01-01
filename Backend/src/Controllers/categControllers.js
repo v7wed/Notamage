@@ -26,7 +26,7 @@ export async function createCateg(req, res) {
     const result = await Category.create({ name, userID });
     return res
       .status(201)
-      .json({ message: `category created successfully ${result}` });
+      .json(result);
   } catch (error) {
     console.error("error in createCateg controller: ", error);
     res.status(500).json({ message: "internal server error" });

@@ -30,7 +30,7 @@ export async function newUser(req, res) {
       });
     }
   } catch (error) {
-    console.error("Error in newUser controller");
+    console.error(`Error in newUser controller ${error}`);
     res.status(500).json({ message: "Internal Server Error" });
   }
 }
@@ -75,7 +75,7 @@ export async function updateEmail(req, res) {
     }
 
     const userExists = await User.findOne({ Email });
-    if (userExists?._id?.toString() !== user._id.toString()) {
+    if (userExists) {
       return res.status(409).json({ message: "Email already in use" });
     }
 
@@ -117,11 +117,28 @@ export async function updatePassword(req, res) {
   }
 }
 
+export async function deleteAccount(req, res) {
+  try {
+    const result = await User.findByIdAndDelete(req.params.id);
+    if (!result)
+      return res.status(404).json({ message: "User not found" });
+    res.status(200).json(result);
+  } catch (error) {
+    console.error("error in deleteAccount controller: ", error);
+    res.status(500).json({ message: "internal server error" });
+  }
+}
+
 export function genToken(id) {
   return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: "30d" });
 }
 
 async function RegistrationLimit(req, res) {
+  // rate limits to be skipped in testing enviroments
+  if (process.env.NODE_ENV === 'test') {
+    return { success: true, reset: Date.now() };
+  }
+
   try {
     const ip =
       req.headers["x-forwarded-for"]?.split(",")[0] ||
