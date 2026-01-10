@@ -11,6 +11,7 @@ import Settings from "./Pages/Settings.jsx";
 import Landing from "./Pages/Landing.jsx";
 import About from "./Pages/About.jsx";
 import Notfound from "./Pages/Notfound.jsx";
+import ChatWithMage from "./Components/ChatWithMage.jsx";
 
 const App = () => {
   const [user, setUser] = useState(null);
@@ -71,6 +72,9 @@ const App = () => {
         <Route path="/settings" element={user ? <Settings user={user} /> : <Landing user={user} onSignOut={onSignOut} />} />
         <Route path="*" element={<Notfound user={user} onSignOut={onSignOut} />} />
       </Routes>
+
+      {/* Chat with The Mage - only visible when authenticated */}
+      {user && <ChatWithMage user={user} />}
     </div>
   );
 };
