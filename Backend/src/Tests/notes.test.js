@@ -15,13 +15,6 @@ afterAll(async () => {
 });
 
 describe("Notes: ", () => {
-    it("a note can be queried by ID ", async () => {
-        const res = await request(app).get('/api/notes/6956a095c8eb1332ee5cd63b');
-        expect(res.statusCode).toBe(200);
-        expect(res.body).toHaveProperty('_id');
-        expect(res.body).toHaveProperty('title');
-    });
-
     it("a note can be created", async () => {
         const res = await request(app)
             .post('/api/notes/')
@@ -35,6 +28,13 @@ describe("Notes: ", () => {
         expect(res.body).toHaveProperty('_id');
         expect(res.body.title).toBe("testing note");
         identifier = res.body._id;
+    });
+
+    it("a note can be queried by ID ", async () => {
+        const res = await request(app).get(`/api/notes/${identifier}`);
+        expect(res.statusCode).toBe(200);
+        expect(res.body).toHaveProperty('_id');
+        expect(res.body).toHaveProperty('title');
     });
 
     it("a note can be updated by ID ", async () => {
