@@ -23,10 +23,7 @@ const ChatWithMage = ({ user }) => {
       setMessages([
         {
           role: "assistant",
-          content: `Greetings, ${user.Name}! I'm the Mage, wise and old,
-Guardian of the stories you've told.
-My name's a secret I'll never betray—
-But your notes? Those I'll organize any day!`,
+          content: `Greetings, ${user.Name}! I'm the Mage, I help organize your notes and thoughts, what's on your mind today?`,
         },
       ]);
     }
@@ -68,7 +65,7 @@ But your notes? Those I'll organize any day!`,
         {
           role: "assistant",
           content:
-            "[Network Error] Apologies... my powers are fading ... something is wrong ... let's chat again some other time.",
+            "[Network Error] Apologies my powers are fading ... something is wrong let's chat again some other time.",
         },
       ]);
     } finally {

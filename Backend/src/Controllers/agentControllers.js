@@ -264,16 +264,8 @@ export async function batchCreateNotesByAgent(req, res) {
 export async function updateNoteByAgent(req, res) {
   try {
     const { noteId } = req.params;
-    const { title, content, categoryId, confirmed } = req.body;
+    const { title, content, categoryId } = req.body;
 
-    // Safety check - agent should have confirmed
-    if (!confirmed) {
-      return res.status(400).json({
-        success: false,
-        error: "Update requires confirmation flag",
-        requiresConfirmation: true,
-      });
-    }
 
     const existingNote = await Note.findById(noteId);
     if (!existingNote) {
@@ -287,7 +279,7 @@ export async function updateNoteByAgent(req, res) {
     const updateData = {};
     if (title !== undefined) updateData.title = title;
     if (content !== undefined) updateData.content = content;
-    if (categoryId !== undefined) updateData.categoryID = categoryId;
+    if (categoryId !== undefined) updateData.categoryID = categoryId;  
 
     const updatedNote = await Note.findByIdAndUpdate(noteId, updateData, {
       new: true,
@@ -325,16 +317,6 @@ export async function updateNoteByAgent(req, res) {
 export async function deleteNoteByAgent(req, res) {
   try {
     const { noteId } = req.params;
-    const { confirmed } = req.body;
-
-    // Safety check - agent should have confirmed
-    if (!confirmed) {
-      return res.status(400).json({
-        success: false,
-        error: "Delete requires confirmation flag",
-        requiresConfirmation: true,
-      });
-    }
 
     const deletedNote = await Note.findByIdAndDelete(noteId);
 
@@ -432,72 +414,6 @@ export async function chatWithAgent(req, res) {
   }
 }
 
-/**
- * Handle confirmation responses for pending actions
- * POST /api/agent/chat/confirm
- */
-export async function confirmAgentAction(req, res) {
-  try {
-    const { confirmed, pendingAction, conversationHistory = [] } = req.body;
-    const user = req.user;
-
-    if (confirmed === undefined || !pendingAction) {
-      return res.status(400).json({
-        success: false,
-        error: "confirmed flag and pendingAction are required",
-      });
-    }
-
-    const agentServiceUrl = process.env.AGENT_SERVICE_URL;
-    const agentServiceSecret = process.env.AGENT_SERVICE_SECRET;
-
-    if (!agentServiceUrl) {
-      return res.status(503).json({
-        success: false,
-        error: "Agent service not configured",
-      });
-    }
-
-    const agentPayload = {
-      confirmed: confirmed,
-      pending_action: pendingAction,
-      user_id: user._id.toString(),
-      user_name: user.Name,
-      conversation_history: conversationHistory,
-    };
-
-    const agentResponse = await fetch(`${agentServiceUrl}/chat/confirm`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${agentServiceSecret}`,
-      },
-      body: JSON.stringify(agentPayload),
-    });
-
-    if (!agentResponse.ok) {
-      const errorData = await agentResponse.json().catch(() => ({}));
-      return res.status(agentResponse.status).json({
-        success: false,
-        error: errorData.error || "Agent service error",
-      });
-    }
-
-    const agentData = await agentResponse.json();
-
-    return res.status(200).json({
-      success: true,
-      response: agentData.response,
-      actionsTaken: agentData.actions_taken || [],
-    });
-  } catch (error) {
-    console.error("Error in confirmAgentAction:", error);
-    return res.status(500).json({
-      success: false,
-      error: "Failed to process confirmation",
-    });
-  }
-}
 
 /**
  * Get user context summary for agent

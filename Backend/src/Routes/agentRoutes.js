@@ -9,7 +9,6 @@ import {
   updateNoteByAgent,
   deleteNoteByAgent,
   chatWithAgent,
-  confirmAgentAction,
   getUserContextForAgent,
   createCategoryByAgent,
   updateCategoryByAgent,
@@ -24,11 +23,10 @@ const router = express.Router();
 //main chat route that receives message from the frontend and sends to fastAPI
 router.post("/chat", protect, chatWithAgent);
 
-//confirmation endpoint so the user accepts / rejects pending action
-router.post("/chat/confirm", protect, confirmAgentAction);
-
 
 //Agent tool routes that receives requests from fastAPI 
+
+//Get context
 router.get("/context/:userId", agentProtect, getUserContextForAgent);
 //Notes
 router.get("/notes/:userId", agentProtect, getNotesForAgent);
