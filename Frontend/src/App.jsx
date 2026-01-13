@@ -30,6 +30,7 @@ const App = () => {
             headers: { Authorization: `Bearer ${token}` },
           });
           setUser(response.data);
+          console.log(response.data._id)
         } catch (error) {
           if (error.response.data.name === "TokenExpiredError") {
             localStorage.removeItem("token");
@@ -73,7 +74,7 @@ const App = () => {
         <Route path="*" element={<Notfound user={user} onSignOut={onSignOut} />} />
       </Routes>
 
-      {/* Chat with The Mage - only visible when authenticated */}
+      {/* Floating chat button */}
       {user && <ChatWithMage user={user} />}
     </div>
   );

@@ -27,12 +27,13 @@ const allowedOrigins =
 app.use(
   cors({
     origin: allowedOrigins,
+    credentials: true
   })
 );
 
 app.use(express.json());
 
-app.get('/api/', (_,res)=>{
+app.get('/api/', (_,res)=>{ //health check
   res.status(200).json({message:"The server is running OK"})
 })
 app.use("/api/users", authRoutes);

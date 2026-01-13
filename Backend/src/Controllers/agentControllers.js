@@ -152,6 +152,11 @@ export async function getCategoriesForAgent(req, res) {
 export async function createNoteByAgent(req, res) {
   try {
     const { userId, title, content, categoryId } = req.body;
+    console.log(`request received from agent with the following data, 
+      userID: ${userId}, 
+      title: ${title},
+      content: ${content},
+      categoryId: ${categoryId},`)
 
     if (!userId) {
       return res.status(400).json({
@@ -368,15 +373,9 @@ export async function deleteNoteByAgent(req, res) {
  */
 export async function chatWithAgent(req, res) {
   try {
-    const { message, conversationHistory = [] } = req.body;
+    const {conversationHistory = [] } = req.body;
     const user = req.user; // From auth middleware
 
-    if (!message?.trim()) {
-      return res.status(400).json({
-        success: false,
-        error: "Message is required",
-      });
-    }
 
     // Get the FastAPI agent service URL from environment
     const agentServiceUrl = process.env.AGENT_SERVICE_URL;
@@ -392,7 +391,6 @@ export async function chatWithAgent(req, res) {
 
     // Forward request to FastAPI agent
     const agentPayload = {
-      message: message,
       user_id: user._id.toString(),
       user_name: user.Name,
       conversation_history: conversationHistory,

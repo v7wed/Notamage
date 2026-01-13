@@ -23,11 +23,14 @@ const ChatWithMage = ({ user }) => {
       setMessages([
         {
           role: "assistant",
-          content: `Greetings, ${user.Name}! I am The Mage, your wise companion for all things related to your notes. How may I assist you today? 🧙‍♂️`,
+          content: `Greetings, ${user.Name}! I'm the Mage, wise and old,
+Guardian of the stories you've told.
+My name's a secret I'll never betray—
+But your notes? Those I'll organize any day!`,
         },
       ]);
     }
-  }, [isOpen, messages.length, user.Name]);
+  }, [isOpen]);
 
   const sendMessage = async () => {
     if (!inputMessage.trim() || isLoading) return;
@@ -41,19 +44,12 @@ const ChatWithMage = ({ user }) => {
     setIsLoading(true);
 
     try {
-      const token = localStorage.getItem("token");
-      
-      // Build conversation history for the agent
-      const conversationHistory = newMessages.map((msg) => ({
-        role: msg.role,
-        content: msg.content,
-      }));
+      const token = localStorage.getItem("token")
 
       const response = await api.post(
         "/agent/chat",
         {
-          message: userMessage,
-          conversationHistory: conversationHistory,
+          conversationHistory: newMessages,
         },
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -72,7 +68,7 @@ const ChatWithMage = ({ user }) => {
         {
           role: "assistant",
           content:
-            "Apologies, I seem to be having trouble connecting to my powers at the moment. Please try again shortly.",
+            "[Network Error] Apologies... my powers are fading ... something is wrong ... let's chat again some other time.",
         },
       ]);
     } finally {
@@ -198,7 +194,7 @@ const ChatWithMage = ({ user }) => {
                 className="input input-bordered flex-1 input-sm"
                 value={inputMessage}
                 onChange={(e) => setInputMessage(e.target.value)}
-                onKeyPress={handleKeyPress}
+                onKeyDown={handleKeyPress}
                 disabled={isLoading}
               />
               <button
