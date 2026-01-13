@@ -11,6 +11,7 @@ import Settings from "./Pages/Settings.jsx";
 import Landing from "./Pages/Landing.jsx";
 import About from "./Pages/About.jsx";
 import Notfound from "./Pages/Notfound.jsx";
+import ChatWithMage from "./Components/ChatWithMage.jsx";
 
 const App = () => {
   const [user, setUser] = useState(null);
@@ -29,6 +30,7 @@ const App = () => {
             headers: { Authorization: `Bearer ${token}` },
           });
           setUser(response.data);
+          console.log(response.data._id)
         } catch (error) {
           if (error.response.data.name === "TokenExpiredError") {
             localStorage.removeItem("token");
@@ -71,6 +73,9 @@ const App = () => {
         <Route path="/settings" element={user ? <Settings user={user} /> : <Landing user={user} onSignOut={onSignOut} />} />
         <Route path="*" element={<Notfound user={user} onSignOut={onSignOut} />} />
       </Routes>
+
+      {/* Floating chat button */}
+      {user && <ChatWithMage user={user} />}
     </div>
   );
 };

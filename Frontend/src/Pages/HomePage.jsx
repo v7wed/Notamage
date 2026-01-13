@@ -28,6 +28,7 @@ const HomePage = ({ user, onSignOut }) => {
   // Fetch notes and categories
   const fetchData = async () => {
     try {
+      console.log(`user id is ${user._id} searching for ${search}`)
       const notesRes = await api.get(`/notes/for/${user._id}?search=${search}`);
       const categRes = await api.get(`/categ/for/${user._id}`);
       setNotes(notesRes.data);
