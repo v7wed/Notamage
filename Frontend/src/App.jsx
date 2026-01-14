@@ -12,13 +12,20 @@ import Landing from "./Pages/Landing.jsx";
 import About from "./Pages/About.jsx";
 import Notfound from "./Pages/Notfound.jsx";
 import ChatWithMage from "./Components/ChatWithMage.jsx";
+import Loading from "./Components/Loading.jsx";
 
 const App = () => {
   const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
 
   const onSignOut = () => {
     localStorage.removeItem("token");
     setUser(null);
+  };
+
+  const triggerRefresh = () => {
+    setRefreshTrigger(prev => prev + 1);
   };
 
   useEffect(() => {
@@ -26,9 +33,7 @@ const App = () => {
       const token = localStorage.getItem("token");
       if (token) {
         try {
-          const response = await api.get("/users/me", {
-            headers: { Authorization: `Bearer ${token}` },
-          });
+          const response = await api.get("/users/me");
           setUser(response.data);
           console.log(response.data._id)
         } catch (error) {
@@ -40,9 +45,18 @@ const App = () => {
           }
         }
       }
+      setLoading(false);
     }
     fetchUser();
   }, []);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-base-200 flex items-center justify-center">
+        <Loading />
+      </div>
+    );
+  }
 
   return (
     <div className="relative h-full w-full">
@@ -63,7 +77,7 @@ const App = () => {
         />
         <Route
           path="/home"
-          element={user ? <HomePage user={user} onSignOut={onSignOut} /> : <Landing user={user} onSignOut={onSignOut} />}
+          element={user ? <HomePage user={user} onSignOut={onSignOut} refreshTrigger={refreshTrigger} /> : <Landing user={user} onSignOut={onSignOut} />}
         />
         <Route path="/note/:id" element={user ? <NoteDetail /> : <Landing user={user} onSignOut={onSignOut} />} />
         <Route
@@ -75,7 +89,7 @@ const App = () => {
       </Routes>
 
       {/* Floating chat button */}
-      {user && <ChatWithMage user={user} />}
+      {user && <ChatWithMage user={user} onAgentResponse={triggerRefresh} />}
     </div>
   );
 };

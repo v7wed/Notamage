@@ -34,11 +34,11 @@ const Settings = ({ user }) => {
 
     setLoading(true);
     try {
-      await api.put("/auth/email", { Email: email.trim() });
+      await api.put("/users/email", { Email: email.trim() });
       toast.success("Email updated successfully.");
       setIsEditingEmail(false);
     } catch (error) {
-      console.error("Error updating email:", error);
+      console.error("Error updating email:", error.response.data.name);
       toast.error(error.response?.data?.message || "Failed to update email");
     } finally {
       setLoading(false);
@@ -58,7 +58,7 @@ const Settings = ({ user }) => {
 
     setLoading(true);
     try {
-      await api.put("/auth/password", {
+      await api.put("/users/password", {
         oldPassword,
         newPassword
       });
@@ -134,7 +134,7 @@ const Settings = ({ user }) => {
                       className="p-2 text-primary hover:bg-primary/10 rounded-full transition-colors"
                       title="Edit Email"
                     >
-                      <ArrowRight className="size-5" />
+                      <Edit3 className="size-5" />
                     </button>
                   </>
                 )}
@@ -150,8 +150,8 @@ const Settings = ({ user }) => {
                   <Lock className="size-6" />
                 </div>
                 <div>
-                  <h3 className="font-medieval text-xl text-ink-brown">Security</h3>
-                  <p className="text-sm text-ink-faded font-body">Protect your secret scrolls</p>
+                  <h3 className="font-medieval text-xl text-ink-brown">Password</h3>
+                  <p className="text-sm text-ink-faded font-body">Protect your precious notes</p>
                 </div>
               </div>
 

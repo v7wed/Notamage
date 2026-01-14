@@ -9,10 +9,11 @@ import Loading from "../Components/Loading.jsx";
 import NoteCard from "../Components/NoteCard.jsx";
 import NotesNotFound from "../Components/NotesNotFound.jsx";
 import AddToModal from "../Components/AddTo.jsx";
+import ConfirmDialog from "../Components/ConfirmDialog.jsx";
 import "../styles/HomePage.css";
 
 
-const HomePage = ({ user, onSignOut }) => {
+const HomePage = ({ user, onSignOut, refreshTrigger = 0 }) => {
   const [notes, setNotes] = useState([]);
   const [selectedNotes, setSelectedNotes] = useState([]);
   const [categs, setCategs] = useState([]);
@@ -20,6 +21,7 @@ const HomePage = ({ user, onSignOut }) => {
   const [search, setSearch] = useState("");
   const [catMode, setCatMode] = useState(false);
   const [showAddToModal, setShowAddToModal] = useState(false);
+  const [confirmDialog, setConfirmDialog] = useState({ isOpen: false, count: 0 });
 
   // Compute mode based on selectedNotes - if any are selected, we're in selection mode
   const mode = selectedNotes.length > 0 ? "home_se" : "home";
@@ -46,7 +48,7 @@ const HomePage = ({ user, onSignOut }) => {
       fetchData();
     }, 500);
     return () => clearTimeout(timer);
-  }, [search, user._id]);
+  }, [search, user._id, refreshTrigger]);
 
   // Toggle a note's selection status
   const handleToggleSelect = (noteId) => {
@@ -116,18 +118,21 @@ const HomePage = ({ user, onSignOut }) => {
   };
 
   // Delete selected notes
-  const handleDeleteSelected = async () => {
+  const handleDeleteSelected = () => {
     if (selectedNotes.length === 0) return;
+    setConfirmDialog({ isOpen: true, count: selectedNotes.length });
+  };
 
-    const confirmMessage = `Are you sure you want to delete ${selectedNotes.length} note${selectedNotes.length > 1 ? 's' : ''}?`;
-    if (!window.confirm(confirmMessage)) return;
+  const confirmDelete = async () => {
+    const count = confirmDialog.count;
+    setConfirmDialog({ isOpen: false, count: 0 });
 
     try {
       await Promise.all(
         selectedNotes.map((id) => api.delete(`/notes/${id}`))
       );
 
-      toast.success(`Deleted ${selectedNotes.length} note${selectedNotes.length > 1 ? 's' : ''}`);
+      toast.success(`Deleted ${count} note${count > 1 ? 's' : ''}`);
       setNotes((prev) => prev.filter((note) => !selectedNotes.includes(note._id)));
       setSelectedNotes([]);
     } catch (error) {
@@ -249,6 +254,18 @@ const HomePage = ({ user, onSignOut }) => {
         categories={categs}
         userId={user._id}
         onSuccess={handleAddToSuccess}
+      />
+
+      {/* Confirm Delete Dialog */}
+      <ConfirmDialog
+        isOpen={confirmDialog.isOpen}
+        onConfirm={confirmDelete}
+        onCancel={() => setConfirmDialog({ isOpen: false, count: 0 })}
+        title="Delete Notes"
+        message={`Are you sure you want to delete ${confirmDialog.count} note${confirmDialog.count > 1 ? 's' : ''}? This action cannot be undone.`}
+        confirmText="Delete"
+        cancelText="Cancel"
+        confirmVariant="danger"
       />
     </div>
   );
