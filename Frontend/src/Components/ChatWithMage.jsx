@@ -1,14 +1,14 @@
 import { useState, useRef, useEffect } from "react";
 import api from "../lib/axios";
 
-const ChatWithMage = ({ user }) => {
+const ChatWithMage = ({ user, onAgentResponse }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState([]);
   const [inputMessage, setInputMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef(null);
 
-  // Auto-scroll to bottom when new messages arrive
+
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
@@ -17,7 +17,7 @@ const ChatWithMage = ({ user }) => {
     scrollToBottom();
   }, [messages]);
 
-  // Initialize conversation with greeting
+  // Initialize conversation
   useEffect(() => {
     if (isOpen && messages.length === 0) {
       setMessages([
@@ -41,15 +41,10 @@ const ChatWithMage = ({ user }) => {
     setIsLoading(true);
 
     try {
-      const token = localStorage.getItem("token")
-
       const response = await api.post(
         "/agent/chat",
         {
           conversationHistory: newMessages,
-        },
-        {
-          headers: { Authorization: `Bearer ${token}` },
         }
       );
 
@@ -58,6 +53,10 @@ const ChatWithMage = ({ user }) => {
         ...newMessages,
         { role: "assistant", content: response.data.response },
       ]);
+    
+    
+      onAgentResponse();
+      
     } catch (error) {
       console.error("Error chatting with agent:", error);
       setMessages([
@@ -85,7 +84,7 @@ const ChatWithMage = ({ user }) => {
       {/* Floating Chat Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="btn btn-circle btn-primary fixed bottom-6 right-6 z-50 shadow-lg hover:shadow-xl transition-all"
+        className="btn btn-circle fixed bottom-6 right-6 z-50 shadow-lg hover:shadow-xl transition-all bg-base-200 border-2 border-red-500 hover:bg-base-300"
         aria-label="Chat with The Mage"
       >
         {isOpen ? (
@@ -104,7 +103,7 @@ const ChatWithMage = ({ user }) => {
             />
           </svg>
         ) : (
-          <span className="text-2xl">🧙‍♂️</span>
+          <img src="/chat_icon.png" alt="Mage" className="w-9 h-9" />
         )}
       </button>
 
@@ -114,15 +113,15 @@ const ChatWithMage = ({ user }) => {
           {/* Header */}
           <div className="card-body p-4">
             <div className="flex items-center gap-3 border-b border-base-300 pb-3">
-              <div className="avatar placeholder">
-                <div className="bg-primary text-primary-content rounded-full w-10">
-                  <span className="text-xl">🧙‍♂️</span>
+              <div className="avatar">
+                <div className="rounded-full w-10">
+                  <img src="/mage_face.png" alt="Mage" />
                 </div>
               </div>
               <div className="flex-1">
                 <h3 className="font-bold text-lg">The Mage</h3>
                 <p className="text-xs text-base-content/60">
-                  Your magical notes assistant
+                  Your wise notes assistant
                 </p>
               </div>
               <button
@@ -149,8 +148,8 @@ const ChatWithMage = ({ user }) => {
                           <span className="text-sm">{user.Name[0]}</span>
                         </div>
                       ) : (
-                        <div className="bg-primary text-primary-content rounded-full w-8 h-8 flex items-center justify-center">
-                          <span className="text-xs">🧙‍♂️</span>
+                        <div className="rounded-full w-8 h-8 flex items-center justify-center overflow-hidden">
+                          <img src="/mage_face.png" alt="Mage" className="w-full h-full object-cover" />
                         </div>
                       )}
                     </div>
@@ -158,7 +157,7 @@ const ChatWithMage = ({ user }) => {
                   <div
                     className={`chat-bubble ${
                       msg.role === "user"
-                        ? "chat-bubble-secondary"
+                        ? "bg-neutral text-neutral-content"
                         : "chat-bubble-primary"
                     }`}
                   >
@@ -170,8 +169,8 @@ const ChatWithMage = ({ user }) => {
               {isLoading && (
                 <div className="chat chat-start">
                   <div className="chat-image avatar">
-                    <div className="w-8 rounded-full bg-primary text-primary-content flex items-center justify-center">
-                      <span className="text-xs">🧙‍♂️</span>
+                    <div className="w-8 rounded-full flex items-center justify-center overflow-hidden">
+                      <img src="/mage_face.png" alt="Mage" className="w-full h-full object-cover" />
                     </div>
                   </div>
                   <div className="chat-bubble chat-bubble-primary">

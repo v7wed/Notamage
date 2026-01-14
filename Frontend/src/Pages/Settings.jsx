@@ -34,11 +34,11 @@ const Settings = ({ user }) => {
 
     setLoading(true);
     try {
-      await api.put("/auth/email", { Email: email.trim() });
+      await api.put("/users/email", { Email: email.trim() });
       toast.success("Email updated successfully.");
       setIsEditingEmail(false);
     } catch (error) {
-      console.error("Error updating email:", error);
+      console.error("Error updating email:", error.response.data.name);
       toast.error(error.response?.data?.message || "Failed to update email");
     } finally {
       setLoading(false);
@@ -58,7 +58,7 @@ const Settings = ({ user }) => {
 
     setLoading(true);
     try {
-      await api.put("/auth/password", {
+      await api.put("/users/password", {
         oldPassword,
         newPassword
       });

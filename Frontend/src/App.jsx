@@ -15,10 +15,15 @@ import ChatWithMage from "./Components/ChatWithMage.jsx";
 
 const App = () => {
   const [user, setUser] = useState(null);
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
 
   const onSignOut = () => {
     localStorage.removeItem("token");
     setUser(null);
+  };
+
+  const triggerRefresh = () => {
+    setRefreshTrigger(prev => prev + 1);
   };
 
   useEffect(() => {
@@ -26,9 +31,7 @@ const App = () => {
       const token = localStorage.getItem("token");
       if (token) {
         try {
-          const response = await api.get("/users/me", {
-            headers: { Authorization: `Bearer ${token}` },
-          });
+          const response = await api.get("/users/me");
           setUser(response.data);
           console.log(response.data._id)
         } catch (error) {
@@ -63,7 +66,7 @@ const App = () => {
         />
         <Route
           path="/home"
-          element={user ? <HomePage user={user} onSignOut={onSignOut} /> : <Landing user={user} onSignOut={onSignOut} />}
+          element={user ? <HomePage user={user} onSignOut={onSignOut} refreshTrigger={refreshTrigger} /> : <Landing user={user} onSignOut={onSignOut} />}
         />
         <Route path="/note/:id" element={user ? <NoteDetail /> : <Landing user={user} onSignOut={onSignOut} />} />
         <Route
@@ -75,7 +78,7 @@ const App = () => {
       </Routes>
 
       {/* Floating chat button */}
-      {user && <ChatWithMage user={user} />}
+      {user && <ChatWithMage user={user} onAgentResponse={triggerRefresh} />}
     </div>
   );
 };

@@ -12,7 +12,7 @@ import AddToModal from "../Components/AddTo.jsx";
 import "../styles/HomePage.css";
 
 
-const HomePage = ({ user, onSignOut }) => {
+const HomePage = ({ user, onSignOut, refreshTrigger = 0 }) => {
   const [notes, setNotes] = useState([]);
   const [selectedNotes, setSelectedNotes] = useState([]);
   const [categs, setCategs] = useState([]);
@@ -46,7 +46,7 @@ const HomePage = ({ user, onSignOut }) => {
       fetchData();
     }, 500);
     return () => clearTimeout(timer);
-  }, [search, user._id]);
+  }, [search, user._id, refreshTrigger]);
 
   // Toggle a note's selection status
   const handleToggleSelect = (noteId) => {
