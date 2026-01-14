@@ -58,7 +58,7 @@ const ChatWithMage = ({ user, onAgentResponse }) => {
       onAgentResponse();
       
     } catch (error) {
-      console.error("Error chatting with agent:", error);
+      console.error("Error chatting with agent:", error.response.data);
       setMessages([
         ...newMessages,
         {

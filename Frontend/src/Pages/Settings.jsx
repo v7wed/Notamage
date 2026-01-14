@@ -134,7 +134,7 @@ const Settings = ({ user }) => {
                       className="p-2 text-primary hover:bg-primary/10 rounded-full transition-colors"
                       title="Edit Email"
                     >
-                      <ArrowRight className="size-5" />
+                      <Edit3 className="size-5" />
                     </button>
                   </>
                 )}
@@ -150,8 +150,8 @@ const Settings = ({ user }) => {
                   <Lock className="size-6" />
                 </div>
                 <div>
-                  <h3 className="font-medieval text-xl text-ink-brown">Security</h3>
-                  <p className="text-sm text-ink-faded font-body">Protect your secret scrolls</p>
+                  <h3 className="font-medieval text-xl text-ink-brown">Password</h3>
+                  <p className="text-sm text-ink-faded font-body">Protect your precious notes</p>
                 </div>
               </div>
 

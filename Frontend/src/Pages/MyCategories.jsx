@@ -13,6 +13,7 @@ import {
 
 import api from "../lib/axios.js";
 import CreateCategory from "../Components/CreateCategory.jsx";
+import ConfirmDialog from "../Components/ConfirmDialog.jsx";
 import Loading from "../Components/Loading.jsx";
 import "../styles/HomePage.css"; // Reuse parchment styles
 
@@ -24,6 +25,7 @@ const MyCategories = ({ user }) => {
   const [editingId, setEditingId] = useState(null);
   const [editName, setEditName] = useState("");
   const [actionLoading, setActionLoading] = useState(false);
+  const [confirmDialog, setConfirmDialog] = useState({ isOpen: false, category: null });
 
   const fetchCategories = async () => {
     try {
@@ -80,10 +82,13 @@ const MyCategories = ({ user }) => {
     }
   };
 
-  const handleDeleteCategory = async (cat) => {
-    const confirmMsg = `Are you sure you want to delete "${cat.name}"? This will uncategorize all notes in it.`;
-    if (!window.confirm(confirmMsg)) return;
+  const handleDeleteCategory = (cat) => {
+    setConfirmDialog({ isOpen: true, category: cat });
+  };
 
+  const confirmDelete = async () => {
+    const cat = confirmDialog.category;
+    setConfirmDialog({ isOpen: false, category: null });
     setActionLoading(true);
     try {
       // Step 1: Clear notes from category
@@ -199,6 +204,18 @@ const MyCategories = ({ user }) => {
         newCategoryName={newCategoryName}
         setNewCategoryName={setNewCategoryName}
         loading={actionLoading}
+      />
+
+      {/* Confirm Delete Dialog */}
+      <ConfirmDialog
+        isOpen={confirmDialog.isOpen}
+        onConfirm={confirmDelete}
+        onCancel={() => setConfirmDialog({ isOpen: false, category: null })}
+        title="Delete Category"
+        message={`Are you sure you want to delete "${confirmDialog.category?.name}"? This will uncategorize all notes in it.`}
+        confirmText="Delete Category"
+        cancelText="Cancel"
+        confirmVariant="danger"
       />
     </div>
   );
