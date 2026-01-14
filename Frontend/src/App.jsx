@@ -12,9 +12,11 @@ import Landing from "./Pages/Landing.jsx";
 import About from "./Pages/About.jsx";
 import Notfound from "./Pages/Notfound.jsx";
 import ChatWithMage from "./Components/ChatWithMage.jsx";
+import Loading from "./Components/Loading.jsx";
 
 const App = () => {
   const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
 
   const onSignOut = () => {
@@ -43,9 +45,18 @@ const App = () => {
           }
         }
       }
+      setLoading(false);
     }
     fetchUser();
   }, []);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-base-200 flex items-center justify-center">
+        <Loading />
+      </div>
+    );
+  }
 
   return (
     <div className="relative h-full w-full">
