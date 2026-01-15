@@ -1,5 +1,9 @@
 import Note from "../Models/Note.js";
 import Category from "../Models/Category.js";
+import { exec } from "child_process";
+import { promisify } from "util";
+
+const execPromise = promisify(exec);
 
 /**
  * Agent Bridge Controllers
@@ -7,14 +11,130 @@ import Category from "../Models/Category.js";
  * They provide structured responses optimized for LLM consumption.
  */
 
-// ============================================
-// READ OPERATIONS (No confirmation needed)
-// ============================================
 
-/**
- * Get all notes for a user - formatted for agent context
- * GET /api/agent/notes/:userId
- */
+
+export async function chatWithAgent(req, res) {
+  try {
+    const {conversationHistory = [] } = req.body;
+    const user = req.user; // From auth middleware
+
+
+    // Get the FastAPI agent service URL from environment
+    const agentServiceUrl = process.env.AGENT_SERVICE_URL;
+    const agentServiceSecret = process.env.AGENT_SERVICE_SECRET;
+
+    if (!agentServiceUrl) {
+      console.error("AGENT_SERVICE_URL not configured");
+      return res.status(503).json({
+        success: false,
+        error: "Agent service not configured",
+      });
+    }
+
+    console.log(`[Agent Request] Attempting to reach: ${agentServiceUrl}/chat`);
+    console.log(`[Agent Request] User: ${user.Name} (${user._id})`);
+
+    // Forward request to FastAPI agent
+    const agentPayload = {
+      user_id: user._id.toString(),
+      user_name: user.Name,
+      conversation_history: conversationHistory,
+    };
+
+    try {
+      // First attempt - if it fails with 502, wake up the service
+      let agentResponse = await fetch(`${agentServiceUrl}/chat`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${agentServiceSecret}`,
+        },
+        body: JSON.stringify(agentPayload),
+      });
+
+      console.log(`[Agent Response] Status: ${agentResponse.status} ${agentResponse.statusText}`);
+
+      // If 502, the service is asleep - wake it up using curl (external process)
+      if (agentResponse.status === 502) {
+        console.log(`[Agent Cold Start] Service is asleep. Waking it up using curl...`);
+        
+        try {
+          // Use curl as external process - might be treated as external request by Render
+          const curlCommand = `curl -X GET "${agentServiceUrl}/health" -s -o /dev/null -w "%{http_code}"`;
+          const { stdout } = await execPromise(curlCommand);
+          console.log(`[Agent Wake] Curl response code: ${stdout.trim()}`);
+        } catch (curlError) {
+          console.log(`[Agent Wake] Curl failed (might still trigger wake): ${curlError.message}`);
+        }
+
+        // Wait 90 seconds for service to fully wake up and load dependencies
+        console.log(`[Agent Wake] Waiting 90 seconds for service to fully start...`);
+        await new Promise(resolve => setTimeout(resolve, 90000));
+
+        // Retry the actual request now that service should be awake
+        console.log(`[Agent Retry] Sending request again after wake-up period...`);
+        agentResponse = await fetch(`${agentServiceUrl}/chat`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${agentServiceSecret}`,
+          },
+          body: JSON.stringify(agentPayload),
+        });
+
+        console.log(`[Agent Response] After wake: ${agentResponse.status} ${agentResponse.statusText}`);
+      }
+
+      // Handle response
+      if (!agentResponse.ok) {
+        const errorData = await agentResponse.json().catch(() => ({}));
+        console.error("[Agent Error] Response data:", errorData);
+        
+        // If still 502 after wake attempt
+        if (agentResponse.status === 502) {
+          return res.status(503).json({
+            success: false,
+            error: "[502] i tried to summon my powers but i failed ... try again in a moment",
+          });
+        }
+        
+        return res.status(agentResponse.status).json({
+          success: false,
+          error: errorData.error || "Agent service error",
+        });
+      }
+
+      const agentData = await agentResponse.json();
+
+      return res.status(200).json({
+        success: true,
+        response: agentData.response,
+        actionsTaken: agentData.actions_taken || [],
+        requiresConfirmation: agentData.requires_confirmation || false,
+        pendingAction: agentData.pending_action || null,
+      });
+    } catch (fetchError) {
+      console.error("[Agent Fetch Error] Type:", fetchError.name);
+      console.error("[Agent Fetch Error] Message:", fetchError.message);
+      
+      return res.status(502).json({
+        success: false,
+        error: `Cannot reach agent service: ${fetchError.message}`,
+        details: {
+          errorType: fetchError.name,
+          targetUrl: agentServiceUrl,
+        }
+      });
+    }
+  } catch (error) {
+    console.error("Error in chatWithAgent:", error);
+    return res.status(500).json({
+      success: false,
+      error: "Failed to communicate with agent",
+    });
+  }
+}
+
 export async function getNotesForAgent(req, res) {
   try {
     const { userId } = req.params;
@@ -345,136 +465,6 @@ export async function deleteNoteByAgent(req, res) {
   }
 }
 
-// ============================================
-// CHAT BRIDGE (Main communication endpoint)
-// ============================================
-
-/**
- * Main chat endpoint - bridges frontend to FastAPI agent
- * POST /api/agent/chat
- */
-export async function chatWithAgent(req, res) {
-  try {
-    const {conversationHistory = [] } = req.body;
-    const user = req.user; // From auth middleware
-
-
-    // Get the FastAPI agent service URL from environment
-    const agentServiceUrl = process.env.AGENT_SERVICE_URL;
-    const agentServiceSecret = process.env.AGENT_SERVICE_SECRET;
-
-    if (!agentServiceUrl) {
-      console.error("AGENT_SERVICE_URL not configured");
-      return res.status(503).json({
-        success: false,
-        error: "Agent service not configured",
-      });
-    }
-
-    console.log(`[Agent Request] Attempting to reach: ${agentServiceUrl}/chat`);
-    console.log(`[Agent Request] User: ${user.Name} (${user._id})`);
-
-    // Forward request to FastAPI agent
-    const agentPayload = {
-      user_id: user._id.toString(),
-      user_name: user.Name,
-      conversation_history: conversationHistory,
-    };
-
-    try {
-      // First attempt - if it fails with 502, wake up the service
-      let agentResponse = await fetch(`${agentServiceUrl}/chat`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${agentServiceSecret}`,
-        },
-        body: JSON.stringify(agentPayload),
-      });
-
-      console.log(`[Agent Response] Status: ${agentResponse.status} ${agentResponse.statusText}`);
-
-      // If 502, the service is asleep - wake it up via health endpoint
-      if (agentResponse.status === 502) {
-        console.log(`[Agent Cold Start] Service is asleep. Waking it up via health endpoint...`);
-        
-        try {
-          // Ping health endpoint to wake the service
-          const healthResponse = await fetch(`${agentServiceUrl}/health`, {
-            method: "GET",
-          });
-          console.log(`[Agent Wake] Health ping sent, status: ${healthResponse.status}`);
-        } catch (healthError) {
-          console.log(`[Agent Wake] Health ping failed (expected during wake): ${healthError.message}`);
-        }
-
-        // Wait 90 seconds for service to fully wake up and load dependencies
-        console.log(`[Agent Wake] Waiting 90 seconds for service to fully start...`);
-        await new Promise(resolve => setTimeout(resolve, 90000));
-
-        // Retry the actual request now that service should be awake
-        console.log(`[Agent Retry] Sending request again after wake-up period...`);
-        agentResponse = await fetch(`${agentServiceUrl}/chat`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${agentServiceSecret}`,
-          },
-          body: JSON.stringify(agentPayload),
-        });
-
-        console.log(`[Agent Response] After wake: ${agentResponse.status} ${agentResponse.statusText}`);
-      }
-
-      // Handle response
-      if (!agentResponse.ok) {
-        const errorData = await agentResponse.json().catch(() => ({}));
-        console.error("[Agent Error] Response data:", errorData);
-        
-        // If still 502 after wake attempt
-        if (agentResponse.status === 502) {
-          return res.status(503).json({
-            success: false,
-            error: "[502] i tried to summon my powers but i failed ... try again in a moment",
-          });
-        }
-        
-        return res.status(agentResponse.status).json({
-          success: false,
-          error: errorData.error || "Agent service error",
-        });
-      }
-
-      const agentData = await agentResponse.json();
-
-      return res.status(200).json({
-        success: true,
-        response: agentData.response,
-        actionsTaken: agentData.actions_taken || [],
-        requiresConfirmation: agentData.requires_confirmation || false,
-        pendingAction: agentData.pending_action || null,
-      });
-    } catch (fetchError) {
-      console.error("[Agent Fetch Error] Type:", fetchError.name);
-      console.error("[Agent Fetch Error] Message:", fetchError.message);
-      
-      return res.status(502).json({
-        success: false,
-        error: `Cannot reach agent service: ${fetchError.message}`,
-        details: {
-          errorType: fetchError.name,
-          targetUrl: agentServiceUrl,
-        }
-      });
-    }
-  } catch (error) {
-    console.error("Error in chatWithAgent:", error);
-    return res.status(500).json({
-      success: false,
-      error: "Failed to communicate with agent",
-    });
-  }
-}
 
 
 /**
