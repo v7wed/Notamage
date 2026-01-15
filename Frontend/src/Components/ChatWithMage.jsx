@@ -60,11 +60,9 @@ const ChatWithMage = ({ user, onAgentResponse }) => {
     } catch (error) {
       console.error("Error chatting with agent:", error.response?.data || error.message);
       
-      let errorMessage = "[Network Error] Apologies my powers are fading ... something is wrong let's chat again some other time.";
+      const errorMessage = "[Network Error] Apologies my powers are fading ... something is wrong let's chat again some other time.";
       
-      // Show specific error from backend if available
-      if (error.response?.data?.error) {
-        errorMessage = `⚠️ ${error.response.data.error}`;
+      if (error.response?.data?.details) {
         
         // Log details for debugging
         if (error.response.data.details) {
@@ -186,7 +184,10 @@ const ChatWithMage = ({ user, onAgentResponse }) => {
                     </div>
                   </div>
                   <div className="chat-bubble chat-bubble-primary">
-                    <span className="loading loading-dots loading-sm"></span>
+                    <div className="flex items-center gap-2">
+                      <span className="loading loading-dots loading-sm"></span>
+                      <span className="text-xs opacity-70">Hmmm...</span>
+                    </div>
                   </div>
                 </div>
               )}

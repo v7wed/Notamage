@@ -20,7 +20,6 @@ const allowedOrigins =
         process.env.AGENT_SERVICE_URL, // Production FastAPI agent 
       ]
     : [
-      process.env.AGENT_SERVICE_URL, //Just in case...
         "http://localhost:5173", // Local frontend dev
         "http://localhost:8000", // Local FastAPI agent dev
       ];

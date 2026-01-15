@@ -381,49 +381,80 @@ export async function chatWithAgent(req, res) {
       conversation_history: conversationHistory,
     };
 
-    try {
-      const agentResponse = await fetch(`${agentServiceUrl}/chat`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${agentServiceSecret}`,
-        },
-        body: JSON.stringify(agentPayload),
-      });
-
-      console.log(`[Agent Response] Status: ${agentResponse.status} ${agentResponse.statusText}`);
-
-      if (!agentResponse.ok) {
-        const errorData = await agentResponse.json().catch(() => ({}));
-        console.error("[Agent Error] Response data:", errorData);
-        return res.status(agentResponse.status).json({
-          success: false,
-          error: errorData.error || "Agent service error",
-        });
-      }
-
-      const agentData = await agentResponse.json();
-
-      return res.status(200).json({
-        success: true,
-        response: agentData.response,
-        actionsTaken: agentData.actions_taken || [],
-        requiresConfirmation: agentData.requires_confirmation || false,
-        pendingAction: agentData.pending_action || null,
-      });
-    } catch (fetchError) {
-      console.error("[Agent Fetch Error] Type:", fetchError.name);
-      console.error("[Agent Fetch Error] Message:", fetchError.message);
-      console.error("[Agent Fetch Error] Full:", fetchError);
-      
-      return res.status(502).json({
-        success: false,
-        error: `Cannot reach agent service: ${fetchError.message}`,
-        details: {
-          errorType: fetchError.name,
-          targetUrl: agentServiceUrl,
+    // Retry logic for cold starts (502 = service waking up)
+    const maxRetries = 3;
+    const retryDelays = [30000, 30000, 10000]; // 30s, 30s, 10s
+    
+    for (let attempt = 0; attempt <= maxRetries; attempt++) {
+      try {
+        if (attempt > 0) {
+          console.log(`[Agent Retry] Attempt ${attempt + 1}/${maxRetries + 1} after ${retryDelays[attempt - 1]}ms delay`);
+          await new Promise(resolve => setTimeout(resolve, retryDelays[attempt - 1]));
         }
-      });
+
+        const agentResponse = await fetch(`${agentServiceUrl}/chat`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${agentServiceSecret}`,
+          },
+          body: JSON.stringify(agentPayload),
+        });
+
+        console.log(`[Agent Response] Status: ${agentResponse.status} ${agentResponse.statusText}`);
+
+        // If 502 and we have retries left, continue to next iteration
+        if (agentResponse.status === 502 && attempt < maxRetries) {
+          console.log(`[Agent Cold Start] Service is waking up, will retry...`);
+          continue;
+        }
+
+        if (!agentResponse.ok) {
+          const errorData = await agentResponse.json().catch(() => ({}));
+          console.error("[Agent Error] Response data:", errorData);
+          
+          // If still 502 after all retries, give helpful message
+          if (agentResponse.status === 502) {
+            return res.status(503).json({
+              success: false,
+              error: "[502 Error] I tried to summon my powers but i failed... try again in a moment"
+            });
+          }
+          
+          return res.status(agentResponse.status).json({
+            success: false,
+            error: errorData.error || "Agent service error",
+          });
+        }
+
+        const agentData = await agentResponse.json();
+
+        return res.status(200).json({
+          success: true,
+          response: agentData.response,
+          actionsTaken: agentData.actions_taken || [],
+          requiresConfirmation: agentData.requires_confirmation || false,
+          pendingAction: agentData.pending_action || null,
+        });
+      } catch (fetchError) {
+        // If it's the last attempt, return error
+        if (attempt === maxRetries) {
+          console.error("[Agent Fetch Error] Type:", fetchError.name);
+          console.error("[Agent Fetch Error] Message:", fetchError.message);
+          
+          return res.status(502).json({
+            success: false,
+            error: `Cannot reach agent service: ${fetchError.message}`,
+            details: {
+              errorType: fetchError.name,
+              targetUrl: agentServiceUrl,
+            }
+          });
+        }
+        
+        // Otherwise, retry
+        console.log(`[Agent Network Error] ${fetchError.message}, will retry...`);
+      }
     }
   } catch (error) {
     console.error("Error in chatWithAgent:", error);
