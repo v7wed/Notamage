@@ -8,7 +8,6 @@ import {
   Mail,
   Check,
   X,
-  ArrowRight,
   ShieldCheck,
   LoaderIcon
 } from "lucide-react";
@@ -17,7 +16,7 @@ import api from "../lib/axios.js";
 import "../styles/HomePage.css";
 
 const Settings = ({ user }) => {
-  const [email, setEmail] = useState(user?.Email || "");
+  const [email, setEmail] = useState(user?.Email);
   const [isEditingEmail, setIsEditingEmail] = useState(false);
   const [showPassModal, setShowPassModal] = useState(false);
 
@@ -38,6 +37,7 @@ const Settings = ({ user }) => {
       toast.success("Email updated successfully.");
       setIsEditingEmail(false);
     } catch (error) {
+      setEmail(user?.Email)
       console.error("Error updating email:", error.response.data.name);
       toast.error(error.response?.data?.message || "Failed to update email");
     } finally {
@@ -128,7 +128,7 @@ const Settings = ({ user }) => {
                   </div>
                 ) : (
                   <>
-                    <span className="font-body text-lg text-ink-brown">{user?.Email}</span>
+                    <span className="font-body text-lg text-ink-brown">{email}</span>
                     <button
                       onClick={() => setIsEditingEmail(true)}
                       className="p-2 text-primary hover:bg-primary/10 rounded-full transition-colors"

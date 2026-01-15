@@ -84,7 +84,7 @@ const App = () => {
           path="/categories"
           element={user ? <MyCategories user={user} /> : <Landing user={user} onSignOut={onSignOut} />}
         />
-        <Route path="/settings" element={user ? <Settings user={user} /> : <Landing user={user} onSignOut={onSignOut} />} />
+        <Route path="/settings" element={user ? <Settings user={user}/> : <Landing user={user} onSignOut={onSignOut} />} />
         <Route path="*" element={<Notfound user={user} onSignOut={onSignOut} />} />
       </Routes>
 
