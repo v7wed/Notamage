@@ -58,13 +58,25 @@ const ChatWithMage = ({ user, onAgentResponse }) => {
       onAgentResponse();
       
     } catch (error) {
-      console.error("Error chatting with agent:", error.response.data);
+      console.error("Error chatting with agent:", error.response?.data || error.message);
+      
+      let errorMessage = "[Network Error] Apologies my powers are fading ... something is wrong let's chat again some other time.";
+      
+      // Show specific error from backend if available
+      if (error.response?.data?.error) {
+        errorMessage = `⚠️ ${error.response.data.error}`;
+        
+        // Log details for debugging
+        if (error.response.data.details) {
+          console.error("Error details:", error.response.data.details);
+        }
+      }
+      
       setMessages([
         ...newMessages,
         {
           role: "assistant",
-          content:
-            "[Network Error] Apologies my powers are fading ... something is wrong let's chat again some other time.",
+          content: errorMessage,
         },
       ]);
     } finally {
