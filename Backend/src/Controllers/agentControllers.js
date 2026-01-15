@@ -371,6 +371,9 @@ export async function chatWithAgent(req, res) {
       });
     }
 
+    console.log(`[Agent Request] Attempting to reach: ${agentServiceUrl}/chat`);
+    console.log(`[Agent Request] User: ${user.Name} (${user._id})`);
+
     // Forward request to FastAPI agent
     const agentPayload = {
       user_id: user._id.toString(),
@@ -378,33 +381,50 @@ export async function chatWithAgent(req, res) {
       conversation_history: conversationHistory,
     };
 
-    const agentResponse = await fetch(`${agentServiceUrl}/chat`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${agentServiceSecret}`,
-      },
-      body: JSON.stringify(agentPayload),
-    });
+    try {
+      const agentResponse = await fetch(`${agentServiceUrl}/chat`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${agentServiceSecret}`,
+        },
+        body: JSON.stringify(agentPayload),
+      });
 
-    if (!agentResponse.ok) {
-      const errorData = await agentResponse.json().catch(() => ({}));
-      console.error("Agent service error:", errorData);
-      return res.status(agentResponse.status).json({
+      console.log(`[Agent Response] Status: ${agentResponse.status} ${agentResponse.statusText}`);
+
+      if (!agentResponse.ok) {
+        const errorData = await agentResponse.json().catch(() => ({}));
+        console.error("[Agent Error] Response data:", errorData);
+        return res.status(agentResponse.status).json({
+          success: false,
+          error: errorData.error || "Agent service error",
+        });
+      }
+
+      const agentData = await agentResponse.json();
+
+      return res.status(200).json({
+        success: true,
+        response: agentData.response,
+        actionsTaken: agentData.actions_taken || [],
+        requiresConfirmation: agentData.requires_confirmation || false,
+        pendingAction: agentData.pending_action || null,
+      });
+    } catch (fetchError) {
+      console.error("[Agent Fetch Error] Type:", fetchError.name);
+      console.error("[Agent Fetch Error] Message:", fetchError.message);
+      console.error("[Agent Fetch Error] Full:", fetchError);
+      
+      return res.status(502).json({
         success: false,
-        error: errorData.error || "Agent service error",
+        error: `Cannot reach agent service: ${fetchError.message}`,
+        details: {
+          errorType: fetchError.name,
+          targetUrl: agentServiceUrl,
+        }
       });
     }
-
-    const agentData = await agentResponse.json();
-
-    return res.status(200).json({
-      success: true,
-      response: agentData.response,
-      actionsTaken: agentData.actions_taken || [],
-      requiresConfirmation: agentData.requires_confirmation || false,
-      pendingAction: agentData.pending_action || null,
-    });
   } catch (error) {
     console.error("Error in chatWithAgent:", error);
     return res.status(500).json({

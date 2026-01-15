@@ -15,11 +15,12 @@ const __dirname = path.resolve();
 
 // CORS configuration - environment-specific
 const allowedOrigins =
-  process.env.NODE_ENV === "production"
+  process.env.NODE_ENV == "production"
     ? [
         process.env.AGENT_SERVICE_URL, // Production FastAPI agent 
       ]
     : [
+      process.env.AGENT_SERVICE_URL, //Just in case...
         "http://localhost:5173", // Local frontend dev
         "http://localhost:8000", // Local FastAPI agent dev
       ];
