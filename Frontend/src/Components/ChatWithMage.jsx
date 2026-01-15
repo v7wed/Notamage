@@ -7,7 +7,7 @@ const ChatWithMage = ({ user, onAgentResponse }) => {
   const [inputMessage, setInputMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef(null);
-
+  const textareaRef = useRef(null);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -16,6 +16,19 @@ const ChatWithMage = ({ user, onAgentResponse }) => {
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
+
+  // Auto-resize textarea
+  const adjustTextareaHeight = () => {
+    const textarea = textareaRef.current;
+    if (textarea) {
+      textarea.style.height = 'auto';
+      textarea.style.height = Math.min(textarea.scrollHeight, 120) + 'px'; // Max 120px
+    }
+  };
+
+  useEffect(() => {
+    adjustTextareaHeight();
+  }, [inputMessage]);
 
   // Initialize conversation
   useEffect(() => {
@@ -34,6 +47,11 @@ const ChatWithMage = ({ user, onAgentResponse }) => {
 
     const userMessage = inputMessage.trim();
     setInputMessage("");
+    
+    // Reset textarea height
+    if (textareaRef.current) {
+      textareaRef.current.style.height = 'auto';
+    }
 
     // Add user message to chat
     const newMessages = [...messages, { role: "user", content: userMessage }];
@@ -54,7 +72,6 @@ const ChatWithMage = ({ user, onAgentResponse }) => {
         { role: "assistant", content: response.data.response },
       ]);
     
-    
       onAgentResponse();
       
     } catch (error) {
@@ -63,11 +80,8 @@ const ChatWithMage = ({ user, onAgentResponse }) => {
       const errorMessage = "[Network Error] Apologies my powers are fading ... something is wrong let's chat again some other time.";
       
       if (error.response?.data?.details) {
-        
         // Log details for debugging
-        if (error.response.data.details) {
-          console.error("Error details:", error.response.data.details);
-        }
+        console.error("Error details:", error.response.data.details);
       }
       
       setMessages([
@@ -82,11 +96,13 @@ const ChatWithMage = ({ user, onAgentResponse }) => {
     }
   };
 
-  const handleKeyPress = (e) => {
+  const handleKeyDown = (e) => {
+    // Enter without Shift = send message
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       sendMessage();
     }
+    // Shift + Enter = allow new line (default behavior)
   };
 
   return (
@@ -196,19 +212,20 @@ const ChatWithMage = ({ user, onAgentResponse }) => {
             </div>
 
             {/* Input */}
-            <div className="flex gap-2 pt-2 border-t border-base-300">
-              <input
-                type="text"
+            <div className="flex gap-2 pt-2 border-t border-base-300 items-end">
+              <textarea
+                ref={textareaRef}
                 placeholder="Ask The Mage anything..."
-                className="input input-bordered flex-1 input-sm"
+                className="textarea textarea-bordered flex-1 resize-none leading-5 min-h-[2.5rem] max-h-[120px] py-2"
                 value={inputMessage}
                 onChange={(e) => setInputMessage(e.target.value)}
-                onKeyDown={handleKeyPress}
+                onKeyDown={handleKeyDown}
                 disabled={isLoading}
+                rows={1}
               />
               <button
                 onClick={sendMessage}
-                className="btn btn-primary btn-sm"
+                className="btn btn-primary btn-sm mb-0.5"
                 disabled={!inputMessage.trim() || isLoading}
               >
                 <svg
