@@ -1,9 +1,5 @@
 import Note from "../Models/Note.js";
 import Category from "../Models/Category.js";
-import { exec } from "child_process";
-import { promisify } from "util";
-
-const execPromise = promisify(exec);
 
 /**
  * Agent Bridge Controllers
@@ -42,8 +38,7 @@ export async function chatWithAgent(req, res) {
     };
 
     try {
-      // First attempt - if it fails with 502, wake up the service
-      let agentResponse = await fetch(`${agentServiceUrl}/chat`, {
+      const agentResponse = await fetch(`${agentServiceUrl}/chat`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -54,53 +49,13 @@ export async function chatWithAgent(req, res) {
 
       console.log(`[Agent Response] Status: ${agentResponse.status} ${agentResponse.statusText}`);
 
-      // If 502, the service is asleep - wake it up using curl (external process)
-      if (agentResponse.status === 502) {
-        console.log(`[Agent Cold Start] Service is asleep. Waking it up using curl...`);
-        
-        try {
-          // Use curl as external process - might be treated as external request by Render
-          const curlCommand = `curl -X GET "${agentServiceUrl}/health" -s -o /dev/null -w "%{http_code}"`;
-          const { stdout } = await execPromise(curlCommand);
-          console.log(`[Agent Wake] Curl response code: ${stdout.trim()}`);
-        } catch (curlError) {
-          console.log(`[Agent Wake] Curl failed (might still trigger wake): ${curlError.message}`);
-        }
-
-        // Wait 90 seconds for service to fully wake up and load dependencies
-        console.log(`[Agent Wake] Waiting 90 seconds for service to fully start...`);
-        await new Promise(resolve => setTimeout(resolve, 90000));
-
-        // Retry the actual request now that service should be awake
-        console.log(`[Agent Retry] Sending request again after wake-up period...`);
-        agentResponse = await fetch(`${agentServiceUrl}/chat`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${agentServiceSecret}`,
-          },
-          body: JSON.stringify(agentPayload),
-        });
-
-        console.log(`[Agent Response] After wake: ${agentResponse.status} ${agentResponse.statusText}`);
-      }
-
-      // Handle response
       if (!agentResponse.ok) {
         const errorData = await agentResponse.json().catch(() => ({}));
         console.error("[Agent Error] Response data:", errorData);
         
-        // If still 502 after wake attempt
-        if (agentResponse.status === 502) {
-          return res.status(503).json({
-            success: false,
-            error: "[502] i tried to summon my powers but i failed ... try again in a moment",
-          });
-        }
-        
         return res.status(agentResponse.status).json({
           success: false,
-          error: errorData.error || "Agent service error",
+          error: errorData.error || `Agent service error: ${agentResponse.statusText}`,
         });
       }
 

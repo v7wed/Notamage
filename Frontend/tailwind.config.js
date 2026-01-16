@@ -7,6 +7,6 @@ export default {
   },
   plugins: [daisyui],
   daisyui: {
-    themes: ["autumn", "coffee"],
+    themes: ["autumn"], //a good dark theme for the website is coffee
   },
 };
