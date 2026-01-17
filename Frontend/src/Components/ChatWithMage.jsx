@@ -110,7 +110,7 @@ const ChatWithMage = ({ user, onAgentResponse }) => {
       {/* Floating Chat Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="btn btn-circle fixed bottom-6 right-6 z-50 shadow-lg hover:shadow-xl transition-all bg-base-200 border-2 border-red-500 hover:bg-base-300"
+        className="btn btn-circle fixed bottom-4 right-4 md:bottom-6 md:right-6 z-50 shadow-lg hover:shadow-xl transition-all bg-base-200 border-2 border-red-500 hover:bg-base-300"
         aria-label="Chat with The Mage"
       >
         {isOpen ? (
@@ -135,17 +135,17 @@ const ChatWithMage = ({ user, onAgentResponse }) => {
 
       {/* Chat Window */}
       {isOpen && (
-        <div className="card fixed bottom-24 right-6 w-96 bg-base-100 shadow-2xl z-40 border border-base-300">
+        <div className="card fixed bottom-20 md:bottom-24 left-4 right-4 md:left-auto md:right-6 md:w-96 bg-base-100 shadow-2xl z-40 border border-base-300 md:rounded-box rounded-t-box">
           {/* Header */}
-          <div className="card-body p-4">
-            <div className="flex items-center gap-3 border-b border-base-300 pb-3">
+          <div className="card-body p-3 md:p-4">
+            <div className="flex items-center gap-2 md:gap-3 border-b border-base-300 pb-2 md:pb-3">
               <div className="avatar">
-                <div className="rounded-full w-10">
+                <div className="rounded-full w-8 md:w-10">
                   <img src="/mage_face.png" alt="Mage" />
                 </div>
               </div>
               <div className="flex-1">
-                <h3 className="font-bold text-lg">The Mage</h3>
+                <h3 className="font-bold text-base md:text-lg">The Mage</h3>
                 <p className="text-xs text-base-content/60">
                   Your wise notes assistant
                 </p>

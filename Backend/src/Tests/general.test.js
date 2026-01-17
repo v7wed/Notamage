@@ -14,7 +14,7 @@ afterAll(async () => {
 
 describe("Server: ", () => {
     it("health check", async () => {
-        const res = await request(app).get('/api');
+        const res = await request(app).get('/health');
         expect(res.statusCode).toBe(200);
     });
 

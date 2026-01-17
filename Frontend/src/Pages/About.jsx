@@ -30,18 +30,18 @@ const About = () => {
 
           {/* First paragraph */}
           <p className="text-gray-300 font-body text-lg md:text-xl leading-relaxed mb-6">
-            This is more than just a notes app — it's my first full-stack AI project built from the ground up,
-            designed with production in mind. Every line of code, every feature, every decision about scalability
-            was made by me alone. No tutorials to follow step-by-step, no hand-holding — just a vision
-            and the determination to bring it to life.
+            This is more than just a notes app — it's my bridge from academic knowledge to production-ready systems.
+            Built entirely from scratch, Notamage represents the journey of connecting theoretical understanding with
+            real-world application. Through that journey, I've filled a lot of knowledge gaps, learned extensively, and moved
+            from single-user thinking to scalable design. Every decision in this project was intentional and independently made.
           </p>
 
           {/* Second paragraph */}
           <p className="text-gray-400 font-body text-base md:text-lg leading-relaxed mb-8">
-            Notes Mage represents a milestone in my journey as a developer. It's where I learned to think
-            about real users, real problems, and real solutions. The mage you see isn't just a mascot —
-            he's a symbol of the magic that happens when curiosity meets persistence. This project is
-            special to me, and I'm proud to share it with the world.
+            This project filled the gaps between Python notebooks and full-stack applications. It was an interesting journey
+            where I started from user flow diagrams and architecture decisions, through design and implementation, all the way
+            to deployment — learning so much along the way. This application represents only a portion of that knowledge
+            practically applied, as I learned to design with growth in mind.
           </p>
 
           {/* LinkedIn CTA */}
@@ -63,8 +63,8 @@ const About = () => {
           </div>
 
           {/* Subtle quote */}
-          <p className="text-gray-600 font-medieval text-sm mt-12 italic">
-            "Every great wizard started as an apprentice with nothing but a spark of curiosity."
+          <p className="text-gray-600 font-medieval text-sm mt-12 italic text-center">
+            "I have no special talents. I am only passionately curious."
           </p>
         </div>
       </div>

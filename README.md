@@ -1,57 +1,98 @@
-# 🧙‍♂️ **Notamage**
+<div align="left">
 
-### _Not a mage but... i can help you with your notes!_ ✨
+# 📝 Notamage v1.0.0
 
-<!-- [![Live Demo](https://img.shields.io/badge/🌐-Live%20Demo-blue?style=for-the-badge)](https://notamage.example.com) -->
+[![LIVE](https://img.shields.io/badge/LIVE-notamage.onrender.com-green?style=for-the-badge&logo=render)](https://notamage.onrender.com)
 
-[![Status](https://img.shields.io/badge/Status-Active%20Development-success?style=for-the-badge)]()
-[![MERN](https://img.shields.io/badge/Stack-MERN-purple?style=for-the-badge)]()
-
-_A full-stack notes application powered by the MERN stack, with an upcoming AI assistant (the "Mage") to help you organize and interact with your notes intelligently._
-
----
+![Status](https://img.shields.io/badge/Status-Maintained-yellowgreen?style=for-the-badge)
 
 </div>
 
-## 📖 **About**
+---
 
-Notamage is an **ongoing project** focused on exploring **agentic AI integration** within a production-ready web application. Built with modern web technologies, it features a clean, responsive interface for note management while preparing the foundation for intelligent AI-powered features.
+## 🎉 What's New?
+- First stable version released!
 
-**Status:** 🚧 Currently in active development. The base MERN stack is complete, with authentication and AI agent integration coming soon.
+---
+## 💡 About
+
+**Notamage** is a personal project focused on **integrating an AI agent within a full-stack web application** and building a production-ready AI system. This project demonstrates orchestrating agentic AI workflows where the agent autonomously calls backend tools (CRUD operations on notes/categories) based on user conversations.
+
+The project also implements a complete **CI/CD pipeline** with automated testing on pull requests and auto-deployment to Render upon passing tests.
+
+---
+## 🧰 Tech Stack
+
+### Frontend
+<p>
+  <img src="https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB" alt="React"/>
+  <img src="https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&logo=vite&logoColor=white" alt="Vite"/>
+  <img src="https://img.shields.io/badge/Axios-5A29E4?style=for-the-badge&logo=axios&logoColor=white" alt="Axios"/>
+  <img src="https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white" alt="TailwindCSS"/>
+  <img src="https://img.shields.io/badge/DaisyUI-5A0EF8?style=for-the-badge&logo=daisyui&logoColor=white" alt="DaisyUI"/>
+</p>
+
+### Backend
+<p>
+  <img src="https://img.shields.io/badge/Express.js-000000?style=for-the-badge&logo=express&logoColor=white" alt="Express.js"/>
+  <img src="https://img.shields.io/badge/MongoDB-47A248?style=for-the-badge&logo=mongodb&logoColor=white" alt="MongoDB"/>
+  <img src="https://img.shields.io/badge/Mongoose-880000?style=for-the-badge&logo=mongoose&logoColor=white" alt="Mongoose"/>
+  <img src="https://img.shields.io/badge/Redis-DC382D?style=for-the-badge&logo=redis&logoColor=white" alt="Redis"/>
+  <img src="https://img.shields.io/badge/Jest-C21325?style=for-the-badge&logo=jest&logoColor=white" alt="Jest"/>
+</p>
+
+### AI Agent
+The backend connects to a separate **FastAPI server** hosting the AI agent that processes user messages and orchestrates tool calls.
+
+🔗 [**Notamage Agent Repository**](https://github.com/v7wed/NotaMage-Agent)
+
 
 ---
 
-## 🛠️ **Current Tech Stack**
+## 🚀 Getting Started
 
-### **Frontend**
+```bash
+# Clone the repository
+git clone https://github.com/v7wed/Notamage.git
 
-![React](https://img.shields.io/badge/-React-61DAFB?style=flat-square&logo=react&logoColor=black)
-![Vite](https://img.shields.io/badge/-Vite-646CFF?style=flat-square&logo=vite&logoColor=white)
-![TailwindCSS](https://img.shields.io/badge/-TailwindCSS-38B2AC?style=flat-square&logo=tailwind-css&logoColor=white)
-![Axios](https://img.shields.io/badge/-Axios-5A29E4?style=flat-square&logo=axios&logoColor=white)
+# Configure your .env in the Backend folder with required keys
+# (refer to Backend/.env.example)
 
-- **React** for building a dynamic, component-based UI
-- **Vite** for blazing-fast development and optimized builds
-- **TailwindCSS** for modern, responsive styling
-- **Axios** for streamlined API requests
+# Make sure you have the agent FastAPI server running at your specified AGENT_SERVICE_URL
 
-### **Backend**
+# Build the project
+npm run build
 
-![Node.js](https://img.shields.io/badge/-Node.js-339933?style=flat-square&logo=node.js&logoColor=white)
-![Express](https://img.shields.io/badge/-Express-000000?style=flat-square&logo=express&logoColor=white)
-![MongoDB](https://img.shields.io/badge/-MongoDB-47A248?style=flat-square&logo=mongodb&logoColor=white)
-![Redis](https://img.shields.io/badge/Redis-%23DD0031.svg?&style=flat-square&logo=redis&logoColor=white)
+# Start the server
+npm run start
+```
 
-- **Node.js & Express** for RESTful API development
-- **MongoDB** with Mongoose for flexible data modeling
-- **Upstash Redis** for rate limiting and caching
+### Testing
+
+```bash
+# Run backend tests
+cd Backend
+npm test
+```
+
+---
+
+## 👨‍💻 About the Developer
+
+Built by **Ahmed Mohammed**, an AI Engineer graduate passionate about creating intelligent applications that solve real problems.
+
+Have suggestions or want to discuss my work? Feel free to reach out!
+
+<a href="https://www.linkedin.com/in/v7wed/">
+  <img src="https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white" alt="LinkedIn"/>
+</a>
+&nbsp;&nbsp;&nbsp;
+<a href="https://github.com/v7wed">
+  <img src="https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=github&logoColor=white" alt="GitHub"/>
+</a>
 
 ---
 
-## 👨‍💻 **About the Developer**
+## 📄 License
 
-Built by **Ahmed Mohammed**, an AI Engineering graduate passionate about creating intelligent applications that solve real problems.
-
-- 🔗 [LinkedIn](https://www.linkedin.com/in/v7wed/)
-
----
+This project is open-sourced under the **MIT License**. Feel free to use it for your own projects or further development. A mention of this repo would be greatly appreciated if you find it helpful!

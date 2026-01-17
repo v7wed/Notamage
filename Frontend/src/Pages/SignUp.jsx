@@ -86,7 +86,7 @@ const SignUp = ({ setUser }) => {
                 {/* Name Field */}
                 <div className="form-control w-full">
                   <label className="label">
-                    <span className="label-text font-medieval">Wizard Name</span>
+                    <span className="label-text font-medieval">Name</span>
                   </label>
                   <label className="input input-bordered flex items-center gap-3 focus-within:outline-none focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/30">
                     <User className="size-4 text-base-content/50" />

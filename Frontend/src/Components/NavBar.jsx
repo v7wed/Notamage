@@ -38,7 +38,7 @@ const Navbar = ({
                 <Search className="size-5 text-base-content/50 group-focus-within:text-primary transition-colors" />
                 <input
                   type="text"
-                  placeholder="Search your mystical scrolls..."
+                  placeholder="Search your notes..."
                   className="grow"
                   onChange={handleChange}
                 />
@@ -66,7 +66,7 @@ const Navbar = ({
                   Sign In
                 </Link>
                 <Link to="/signup" className="btn btn-primary btn-sm font-medieval">
-                  <span className="hidden sm:inline">Join the Mage</span>
+                  <span className="hidden sm:inline">Give it a try</span>
                   <span className="sm:hidden">Join</span>
                 </Link>
               </>

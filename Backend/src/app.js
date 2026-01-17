@@ -33,8 +33,8 @@ app.use(
 
 app.use(express.json());
 
-app.get('/api/', (_,res)=>{ //health check
-  res.status(200).json({message:"The server is running OK"})
+app.get('/health', (_,res)=>{ //health check
+  res.status(200).json({message:"Notamage server is running OK"})
 })
 app.use("/api/users", authRoutes);
 app.use("/api/notes", notesRoutes);

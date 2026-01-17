@@ -117,15 +117,15 @@ const MyCategories = ({ user }) => {
     <div className="min-h-screen bg-base-200">
       <div className="max-w-4xl mx-auto p-4 md:p-8">
         {/* Header Section */}
-        <div className="flex items-center justify-between mb-8">
-          <Link to="/home" className="btn btn-ghost btn-sm gap-2 font-medieval border border-primary/30 hover:border-primary">
+        <div className="flex items-center justify-between mb-8 gap-2">
+          <Link to="/home" className="btn btn-ghost btn-sm gap-1 md:gap-2 font-medieval border border-primary/30 hover:border-primary">
             <ArrowLeft className="size-4" />
-            <span>Return to Notes</span>
+            <span className="hidden sm:inline">Return to Notes</span>
           </Link>
-          <h1 className="text-3xl font-medieval text-primary">My Categories</h1>
+          <h1 className="text-xl md:text-3xl font-medieval text-primary whitespace-nowrap">My Categories</h1>
           <button
             onClick={() => setShowAddModal(true)}
-            className="btn btn-primary btn-sm gap-2 font-medieval"
+            className="btn btn-primary btn-sm gap-1 md:gap-2 font-medieval"
           >
             <Plus className="size-4" />
             <span className="hidden sm:inline">Add Category</span>
