@@ -1,4 +1,4 @@
-import { notelimiter } from "../Config/upstash.js";
+import { notelimiter, loginLimiter } from "../Config/upstash.js";
 
 export async function NoteLimit(req, res, next) {
   if (process.env.NODE_ENV === 'test') {
@@ -26,6 +26,36 @@ export async function NoteLimit(req, res, next) {
     next();
   } catch (error) {
     console.error(`Error in NoteLimit middleware ${error}`);
+    next(error);
+  }
+}
+
+// Prevent brute force login attacks
+export async function LoginLimit(req, res, next) {
+  if (process.env.NODE_ENV === 'test') {
+    return next();
+  }
+
+  try {
+    const identifier = `loginLimit:${req.body.Email}`;
+    const { success, limit, remaining, reset } = await loginLimiter.limit(identifier);
+    
+    if (!success) {
+      return res.status(429).json({
+        message: "Too many login attempts. Please try again later.",
+        resetsAt: new Date(reset).toISOString(),
+      });
+    }
+    
+    res.set({
+      "X-RateLimit-Limit": limit,
+      "X-RateLimit-Remaining": remaining,
+      "X-RateLimit-Reset": new Date(reset).toISOString(),
+    });
+    
+    next();
+  } catch (error) {
+    console.error(`Error in LoginLimit middleware: ${error}`);
     next(error);
   }
 }

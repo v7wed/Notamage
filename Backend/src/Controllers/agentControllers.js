@@ -95,6 +95,14 @@ export async function getNotesForAgent(req, res) {
     const { userId } = req.params;
     const { limit = 50 } = req.query;
 
+    //  Security layer: Validate ObjectId format
+    if (!userId.match(/^[0-9a-fA-F]{24}$/)) {
+      return res.status(400).json({
+        success: false,
+        error: "Invalid user ID format",
+      });
+    }
+
     const notes = await Note.find({ userID: userId })
       .sort({ updatedAt: -1 })
       .limit(parseInt(limit))
@@ -132,6 +140,14 @@ export async function searchNotesForAgent(req, res) {
   try {
     const { userId } = req.params;
     const { q: searchQuery, limit = 20 } = req.query;
+
+    // Security layer: Validate ObjectId format
+    if (!userId.match(/^[0-9a-fA-F]{24}$/)) {
+      return res.status(400).json({
+        success: false,
+        error: "Invalid user ID format",
+      });
+    }
 
     if (!searchQuery?.trim()) {
       return res.status(400).json({
@@ -188,6 +204,14 @@ export async function getCategoriesForAgent(req, res) {
   try {
     const { userId } = req.params;
 
+    // Security layer: Validate ObjectId format
+    if (!userId.match(/^[0-9a-fA-F]{24}$/)) {
+      return res.status(400).json({
+        success: false,
+        error: "Invalid user ID format",
+      });
+    }
+
     const categories = await Category.find({ userID: userId });
 
     // Get note counts for each category
@@ -232,6 +256,21 @@ export async function createNoteByAgent(req, res) {
       title: ${title},
       content: ${content},
       categoryId: ${categoryId},`)
+
+    // Security layer: Validate ObjectId formats
+    if (!userId || !userId.match(/^[0-9a-fA-F]{24}$/)) {
+      return res.status(400).json({
+        success: false,
+        error: "Invalid user ID format",
+      });
+    }
+
+    if (categoryId && !categoryId.match(/^[0-9a-fA-F]{24}$/)) {
+      return res.status(400).json({
+        success: false,
+        error: "Invalid category ID format",
+      });
+    }
 
     if (!userId) {
       return res.status(400).json({
@@ -341,6 +380,20 @@ export async function updateNoteByAgent(req, res) {
     const { noteId } = req.params;
     const { title, content, categoryId } = req.body;
 
+    // Security layer: Validate ObjectId formats
+    if (!noteId.match(/^[0-9a-fA-F]{24}$/)) {
+      return res.status(400).json({
+        success: false,
+        error: "Invalid note ID format",
+      });
+    }
+
+    if (categoryId && !categoryId.match(/^[0-9a-fA-F]{24}$/)) {
+      return res.status(400).json({
+        success: false,
+        error: "Invalid category ID format",
+      });
+    }
 
     const existingNote = await Note.findById(noteId);
     if (!existingNote) {
@@ -393,6 +446,14 @@ export async function deleteNoteByAgent(req, res) {
   try {
     const { noteId } = req.params;
 
+    // Security layer: Validate ObjectId format
+    if (!noteId.match(/^[0-9a-fA-F]{24}$/)) {
+      return res.status(400).json({
+        success: false,
+        error: "Invalid note ID format",
+      });
+    }
+
     const deletedNote = await Note.findByIdAndDelete(noteId);
 
     if (!deletedNote) {
@@ -429,6 +490,14 @@ export async function deleteNoteByAgent(req, res) {
 export async function getUserContextForAgent(req, res) {
   try {
     const { userId } = req.params;
+
+    // Security layer: Validate ObjectId format
+    if (!userId.match(/^[0-9a-fA-F]{24}$/)) {
+      return res.status(400).json({
+        success: false,
+        error: "Invalid user ID format",
+      });
+    }
 
     // Get note count
     const noteCount = await Note.countDocuments({ userID: userId });
