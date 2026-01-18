@@ -1,6 +1,6 @@
 <div align="left">
 
-# 📝 Notamage v1.0.0
+# 📝 Notamage v1.0.1
 
 [![LIVE](https://img.shields.io/badge/LIVE-notamage.onrender.com-green?style=for-the-badge&logo=render)](https://notamage.onrender.com)
 
@@ -11,7 +11,8 @@
 ---
 
 ## 🎉 What's New?
-- First stable version released!
+- Fixed security issues from v1.0.0
+- Version is now stable
 
 ---
 ## 💡 About

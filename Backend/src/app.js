@@ -7,11 +7,16 @@ import notesRoutes from "./Routes/notesRoutes.js";
 import authRoutes from "./Routes/authRoutes.js";
 import categRoutes from "./Routes/categRoutes.js";
 import agentRoutes from "./Routes/agentRoutes.js";
+import { GeneralGetLimit } from "./Middleware/RateLimiters.js";
 
 dotenv.config();
 
 const app = express();
 const __dirname = path.resolve();
+
+// Trust Render's proxy to get actual client IPs
+// Required for rate limiting by IP when behind load balancer
+app.set('trust proxy', true);
 
 // CORS configuration - environment-specific
 const allowedOrigins =
@@ -43,7 +48,7 @@ app.use("/api/agent", agentRoutes);
 
 if (process.env.NODE_ENV === "production") {
   app.use(express.static(path.join(__dirname, "../Frontend/dist")));
-  app.get("*", (_, res) => {
+  app.get("*", GeneralGetLimit, (_, res) => {
     res.sendFile(path.join(__dirname, "../Frontend/dist/index.html"));
   });
 }
