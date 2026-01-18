@@ -6,6 +6,12 @@ import { reglimiter } from "../Config/upstash.js";
 export async function newUser(req, res) {
   try {
     const { Name, Email, Password } = req.body;
+    
+    // Extra security layer: Email is a string (prevent NoSQL injection)
+    if (typeof Email !== 'string' || typeof Name !== 'string' || typeof Password !== 'string') {
+      return res.status(400).json({ message: "Invalid input types" });
+    }
+    
     const userExists = await User.findOne({ Email });
     if (!Name.trim() || !Email.trim() || !Password.trim()) {
       return res.status(400).json({ message: "All fields are required" });
@@ -38,6 +44,12 @@ export async function newUser(req, res) {
 export async function signIn(req, res) {
   try {
     const { Email, Password } = req.body;
+    
+    // Extra security layer: Email is a string (prevent NoSQL injection)
+    if (typeof Email !== 'string' || typeof Password !== 'string') {
+      return res.status(400).json({ name: "InvalidInput", message: "Invalid input types" });
+    }
+    
     const LoadAcc = await User.findOne({ Email });
     if (!Email.trim() || !Password.trim()) {
       return res.status(400).json({ name: "EmptyFields", mesage: "All fields are required" });

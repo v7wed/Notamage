@@ -9,15 +9,16 @@ import {
   createCateg,
   updateCateg,
 } from "../Controllers/categControllers.js";
+import { ApiLimit } from "../Middleware/RateLimiters.js";
 
 const router = express.Router();
 
-router.get("/:id", getCateg);
-router.get("/for/:userid", getAllCateg);
-router.post("/", createCateg);
-router.put("/add", addtoCateg);
-router.put("/:id", updateCateg);
-router.put("/:id/clear", clearCateg);
-router.delete("/:id", deleteCateg);
+router.get("/:id", ApiLimit, getCateg);
+router.get("/for/:userid", ApiLimit, getAllCateg);
+router.post("/", ApiLimit, createCateg);
+router.put("/add", ApiLimit, addtoCateg);
+router.put("/:id", ApiLimit, updateCateg);
+router.put("/:id/clear", ApiLimit, clearCateg);
+router.delete("/:id", ApiLimit, deleteCateg);
 
 export default router;

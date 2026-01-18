@@ -17,11 +17,12 @@ import {
 } from "../Controllers/agentControllers.js";
 import protect from "../Middleware/auth.js";
 import { agentProtect } from "../Middleware/agent.js";
+import { ChatLimit } from "../Middleware/RateLimiters.js";
 
 const router = express.Router();
 
 //main chat route that receives message from the frontend and sends to fastAPI
-router.post("/chat", protect, chatWithAgent);
+router.post("/chat", protect, ChatLimit, chatWithAgent);
 
 
 //Agent tool routes that receives requests from fastAPI 

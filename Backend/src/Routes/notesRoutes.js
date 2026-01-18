@@ -7,14 +7,14 @@ import {
   deleteNote,
   getUserNotes,
 } from "../Controllers/notesControllers.js";
-import { NoteLimit } from "../Middleware/RateLimiters.js";
+import { NoteLimit, ApiLimit } from "../Middleware/RateLimiters.js";
 
 const router = express.Router();
 
-router.get("/for/:userid", getUserNotes);
-router.get("/:id", getNote);
+router.get("/for/:userid", ApiLimit, getUserNotes);
+router.get("/:id", ApiLimit, getNote);
 router.post("/", NoteLimit, createNote);
 router.put("/:id", NoteLimit, updateNote);
-router.delete("/:id", deleteNote);
+router.delete("/:id", ApiLimit, deleteNote);
 
 export default router;

@@ -5,7 +5,15 @@ export async function getUserNotes(req, res) {
     const { search } = req.query
     let query = { userID: req.params.userid }
     if (search?.trim()) {
-      query = { userID: req.params.id, $or: [{ title: { $regex: search, $options: 'i' } }, { content: { $regex: search, $options: 'i' } }] }
+      // Security Layer: Escape special regex characters to prevent ReDoS attacks
+      const escapedSearch = search.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      query = { 
+        userID: req.params.userid, 
+        $or: [
+          { title: { $regex: escapedSearch, $options: 'i' } }, 
+          { content: { $regex: escapedSearch, $options: 'i' } }
+        ] 
+      }
     }
     const userNotes = await Note.find(query).sort({
       createdAt: -1,
@@ -19,6 +27,11 @@ export async function getUserNotes(req, res) {
 
 export async function getNote(req, res) {
   try {
+    // Security layer: Validate ObjectId format
+    if (!req.params.id.match(/^[0-9a-fA-F]{24}$/)) {
+      return res.status(400).json({ message: "Invalid note ID format" });
+    }
+    
     const theNote = await Note.findById(req.params.id);
     if (!theNote)
       return res
