@@ -1,4 +1,6 @@
 import { useState, useRef, useEffect } from "react";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import api from "../lib/axios";
 
 const ChatWithMage = ({ user, onAgentResponse }) => {
@@ -187,7 +189,39 @@ const ChatWithMage = ({ user, onAgentResponse }) => {
                         : "chat-bubble-primary"
                     }`}
                   >
-                    {msg.content}
+                    {msg.role === "assistant" ? (
+                      <div className="prose prose-sm max-w-none prose-invert">
+                        <ReactMarkdown
+                          remarkPlugins={[remarkGfm]}
+                          components={{
+                            // Customize heading sizes for chat
+                            h1: ({ ...props }) => <h1 className="text-lg font-bold mb-2" {...props} />,
+                            h2: ({ ...props }) => <h2 className="text-base font-bold mb-1.5" {...props} />,
+                            h3: ({ ...props }) => <h3 className="text-sm font-bold mb-1" {...props} />,
+                            // Customize code blocks
+                            code: ({ inline, ...props }) => 
+                              inline ? (
+                                <code className="bg-base-300/50 px-1.5 py-0.5 rounded text-xs" {...props} />
+                              ) : (
+                                <code className="block bg-base-300/50 p-2 rounded text-xs overflow-x-auto" {...props} />
+                              ),
+                            // Customize lists
+                            ul: ({ ...props }) => <ul className="list-disc list-inside space-y-1 my-2" {...props} />,
+                            ol: ({ ...props }) => <ol className="list-decimal list-inside space-y-1 my-2" {...props} />,
+                            // Customize links
+                            a: ({ ...props }) => <a className="underline hover:opacity-80" {...props} />,
+                            // Customize paragraphs
+                            p: ({ ...props }) => <p className="mb-2 last:mb-0" {...props} />,
+                            // Customize blockquotes
+                            blockquote: ({ ...props }) => <blockquote className="border-l-2 border-base-300 pl-2 italic my-2" {...props} />,
+                          }}
+                        >
+                          {msg.content}
+                        </ReactMarkdown>
+                      </div>
+                    ) : (
+                      msg.content
+                    )}
                   </div>
                 </div>
               ))}

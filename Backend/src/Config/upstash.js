@@ -28,7 +28,7 @@ export const generalGetLimiter = new Ratelimit({
 // Rate limit for authenticated API routes - 130 requests per hour per user
 export const apiLimiter = new Ratelimit({
   redis: Redis.fromEnv(),
-  limiter: Ratelimit.slidingWindow(130, "1 h"),
+  limiter: Ratelimit.slidingWindow(500, "1 h"),
 });
 
 // Protect LLM API costs - 5 chat messages per 15 minutes per user

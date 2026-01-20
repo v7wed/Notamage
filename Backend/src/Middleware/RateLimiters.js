@@ -105,7 +105,7 @@ export async function GeneralGetLimit(req, res, next) {
     
     if (!success) {
       return res.status(429).json({
-        message: "Too many requests. Please slow down.",
+        message: "Too many website requests. Please slow down.",
         resetsAt: new Date(reset).toISOString(),
       });
     }
@@ -137,7 +137,7 @@ export async function ApiLimit(req, res, next) {
     
     if (!success) {
       return res.status(429).json({
-        message: "Too many requests. Please slow down.",
+        message: "Too many route requests. Please slow down.",
         resetsAt: new Date(reset).toISOString(),
       });
     }

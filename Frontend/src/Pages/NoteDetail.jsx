@@ -80,9 +80,11 @@ const NoteDetail = () => {
       setHasChanges(false);
       isNewNote.current = false;
       toast.success("Note saved successfully");
+      return true;
     } catch (error) {
       console.error("Error saving note:", error);
       toast.error("Failed to save note");
+      return false;
     } finally {
       setSaving(false);
     }
