@@ -3,6 +3,7 @@
 # 📝 Notamage v1.0.2
 
 [![LIVE DEMO](https://img.shields.io/badge/LIVE_DEMO-notamage.onrender.com-green?style=for-the-badge&logo=render)](https://notamage.onrender.com)
+(Agent is currently NOT Live)
 
 ![Status](https://img.shields.io/badge/Status-Maintained-yellowgreen?style=for-the-badge)
 
