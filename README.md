@@ -2,14 +2,13 @@
 
 # 📝 Notamage v1.0.2
 
-[![LIVE DEMO](https://img.shields.io/badge/LIVE_DEMO-notamage.onrender.com-green?style=for-the-badge&logo=render)](https://notamage.onrender.com)
-(Agent is currently NOT Live)
+[![DEMO STATUS](https://img.shields.io/badge/DEMO-Paused-lightgrey?style=for-the-badge&logo=render)]()
 
 ![Status](https://img.shields.io/badge/Status-Maintained-yellowgreen?style=for-the-badge)
 
 </div>
 
-> **Note:** The live demo uses a free-tier LLM API with limited daily requests. For full functionality testing, users can clone the repository and configure their own API keys. A video demonstration showcasing agent capabilities is available on https://youtu.be/AzpNhJl4k04
+> **Note:** The live demo is currently offline. A video demonstration showcasing agent capabilities is available here: https://youtu.be/AzpNhJl4k04
 
 ---
 
